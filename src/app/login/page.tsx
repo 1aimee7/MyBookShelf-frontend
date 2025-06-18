@@ -1,47 +1,99 @@
+"use client";
+
+import React from "react";
+
 export default function Login() {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Form submitted");
+  };
+
   return (
-    <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-[#ff4500] to-[#ffffff]">
-      <div className="absolute bottom-0 w-full h-1/3 bg-wave"></div>
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md z-10 border border-gray-200">
-        <h2 className="text-3xl font-semibold mb-4 text-center flex items-center justify-center">
-          <span className="text-[#ff8c00]">My Book</span>
-          <span className="text-gray-600 ml-1">Shelf</span>
-        </h2>
-        <p className="text-gray-600 text-center mb-6 text-sm">Welcome back! Sign in to your Digital Library</p>
-        <form>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background with exact SVG from image */}
+      <div className="absolute inset-0 -z-10" style={{ background: "white" }}>
+        <svg
+          className="w-full h-full"
+          viewBox="0 0 1920 1078"
+          preserveAspectRatio="xMidYMid slice"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <linearGradient id="paint0_linear_7_126" x1="533.5" y1="-250.046" x2="930.38" y2="1569.83" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#FA7C54"/>
+              <stop offset="1" stopColor="#EC2C5A"/>
+            </linearGradient>
+          </defs>
+          <path d="M422.191 543.979C192.258 503.244 -0.0049549 1077.16 -0.0049549 1077.16L-24.5485 0.28931L2015.36 -70.4756L1632.2 225.998C1632.2 225.998 1048.5 730.186 840.631 745.682C632.759 761.179 626.854 580.237 422.191 543.979Z" fill="url(#paint0_linear_7_126)"/>
+        </svg>
+      </div>
+
+      {/* Login Form */}
+      <div className="bg-white p-8 rounded-xl  shadow-lg h-130 max-w-md z-10 w-85">
+        <h1 className="text-center text-3xl font-semibold mb-1">
+          My <span className="text-orange-500 font-bold">Book</span> Shelf
+        </h1>
+        <p className="text-center text-gray-500 mb-6 text-sm leading-tight">
+          Welcome Back!
+          <br />
+          Sign in to your Digital Library
+        </p>
+
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-medium mb-1">Email</label>
+            <label htmlFor="email" className="block text-gray-700 text-sm mb-1">
+              Email
+            </label>
             <input
+              id="email"
               type="email"
-              className="w-full p-2 border border-gray-300 rounded mt-1 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Enter your email"
-              defaultValue="username@college.ac.za"
+              placeholder="username@collegename.ac.za"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
+              required
             />
           </div>
+
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-medium mb-1">Password</label>
+            <label htmlFor="password" className="block text-gray-700 text-sm mb-1">
+              Password
+            </label>
             <input
+              id="password"
               type="password"
-              className="w-full p-2 border border-gray-300 rounded mt-1 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Enter your password"
-              defaultValue="********"
+              placeholder="********"
+              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
+              required
             />
           </div>
-          <div className="flex items-center justify-between mb-4 text-sm">
+
+          <div className="mb-6 flex items-center justify-between text-sm">
             <label className="flex items-center text-gray-700">
               <input type="checkbox" className="mr-2 accent-orange-500" /> Remember me
             </label>
-            <a href="#" className="text-blue-600 hover:underline">Forgot password?</a>
+            <a href="#" className="text-blue-600 hover:underline">
+              Forgot password?
+            </a>
           </div>
+
           <button
             type="submit"
-            className="w-full bg-[#ff8c00] text-white p-2 rounded hover:bg-[#ff751a] transition duration-200"
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
           >
             Login
           </button>
-          <p className="text-center mt-4 text-gray-600 text-sm">
-            New User? <a href="/register" className="text-blue-600 hover:underline">Register Here</a>
-          </p>
+
+          <div className="mt-4 flex justify-between text-gray-600 text-xs">
+            <span>
+              New User?{" "}
+             <a href="/register" className="text-blue-600 hover:underline text-xs">
+  Register Here
+</a>
+
+            </span>
+            <a href="#" className="text-blue-600 hover:underline text-xs">
+              Use as Guest
+            </a>
+          </div>
         </form>
       </div>
     </div>

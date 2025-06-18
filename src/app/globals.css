@@ -3,8 +3,10 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary-orange: #ff4500; /* Matches the image gradient start */
+  --primary-orange: #f05e41; /* Matched from your image */
   --secondary-gray: #4b5563;
+
+  --background-gradient: linear-gradient(135deg, #f05e41 0%, #ffffff 100%);
 }
 
 @layer base {
@@ -18,35 +20,23 @@
 
 body {
   font-family: var(--font-sans);
-  background: linear-gradient(to bottom right, var(--primary-orange), var(--background));
+  background: var(--background-gradient); /* Updated to use gradient variable */
   color: var(--foreground);
 }
 
-/* 🟠 Gradient background with wave overlay */
-.bg-wave {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ff4500' fill-opacity='0.3' d='M0,128L48,138.7C96,149,192,171,288,170.7C384,171,480,149,576,133.3C672,117,768,107,864,106.7C960,107,1056,117,1152,122.7C1248,128,1344,128,1392,128L1440,128L1440,320L0,320Z'/%3E%3C/svg%3E");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: bottom;
-}
+/* Removed old .bg-wave class as requested */
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #1a1a1a; /* Adjusted to look good with the orange in dark mode */
     --foreground: #ededed;
-    --primary-orange: #ff5e1a; /* Darker orange for contrast */
+    --primary-orange: #fb4f05;
     --secondary-gray: #9ca3af;
+
+    --background-gradient: linear-gradient(135deg, #fb4f05 0%, #1a1a1a 100%);
   }
 
   body {
-    background: linear-gradient(to bottom right, var(--primary-orange), var(--background));
+    background: var(--background-gradient); /* dark mode gradient */
   }
-
-  /* Add this to src/app/globals.css if not already present */
-.bg-wave {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ff4500' fill-opacity='0.3' d='M0,128L48,138.7C96,149,192,171,288,170.7C384,171,480,149,576,133.3C672,117,768,107,864,106.7C960,107,1056,117,1152,122.7C1248,128,1344,128,1392,128L1440,128L1440,320L0,320Z'/%3E%3C/svg%3E");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: bottom;
-}
 }
