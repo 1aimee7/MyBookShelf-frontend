@@ -3,24 +3,50 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary-orange: #ff4500; /* Matches the image gradient start */
+  --secondary-gray: #4b5563;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@layer base {
+  :where(.theme) {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --font-sans: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+    --font-mono: var(--font-geist-mono, 'Courier New', Courier, monospace);
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  background: linear-gradient(to bottom right, var(--primary-orange), var(--background));
+  color: var(--foreground);
+}
+
+/* 🟠 Gradient background with wave overlay */
+.bg-wave {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ff4500' fill-opacity='0.3' d='M0,128L48,138.7C96,149,192,171,288,170.7C384,171,480,149,576,133.3C672,117,768,107,864,106.7C960,107,1056,117,1152,122.7C1248,128,1344,128,1392,128L1440,128L1440,320L0,320Z'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: bottom;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary-orange: #ff5e1a; /* Darker orange for contrast */
+    --secondary-gray: #9ca3af;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background: linear-gradient(to bottom right, var(--primary-orange), var(--background));
+  }
+
+  /* Add this to src/app/globals.css if not already present */
+.bg-wave {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23ff4500' fill-opacity='0.3' d='M0,128L48,138.7C96,149,192,171,288,170.7C384,171,480,149,576,133.3C672,117,768,107,864,106.7C960,107,1056,117,1152,122.7C1248,128,1344,128,1392,128L1440,128L1440,320L0,320Z'/%3E%3C/svg%3E");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: bottom;
+}
 }
