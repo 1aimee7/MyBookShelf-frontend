@@ -33,7 +33,7 @@ export default function Verified() {
         <h1 className="text-center text-3xl font-semibold mb-1">
           My <span className="text-orange-500 font-bold">Book</span> Shelf
         </h1>
-        <p className="text-center text-gray-500 mb-6 text-sm leading-tight">
+        <p className="text-center text-gray-490 mb-6 text-sm leading-tight">
           Verification
         </p>
 
