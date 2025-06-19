@@ -4,8 +4,7 @@ import React from "react";
 
 export default function Verified() {
   const handleLogin = () => {
-    console.log("Redirect to login page");
-    // Add navigation logic here, e.g., window.location.href = '/login';
+    window.location.href = '/login'; // Added navigation logic
   };
 
   return (
