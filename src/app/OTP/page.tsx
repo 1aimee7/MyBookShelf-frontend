@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 
 export default function OTP() {
   const [otp, setOtp] = useState(['', '', '', '', '']);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]); // ✅ this is OK
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const router = useRouter();
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return;
@@ -24,14 +26,20 @@ export default function OTP() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("OTP submitted:", otp.join(''));
+    // Simulate API call to verify OTP
+    const response = { success: true }; // Mock response
+    if (response.success) {
+      router.push("/verified"); // Redirect to Verified page
+    } else {
+      alert("Verification failed");
+    }
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background SVG */}
       <div className="absolute inset-0 -z-10" style={{ background: "white" }}>
         <svg
           className="w-full h-full"
@@ -52,15 +60,13 @@ export default function OTP() {
         </svg>
       </div>
 
-      {/* OTP Form */}
-      <div className="bg-white p-8 rounded-xl  shadow-lg h-145 max-w-md z-10 w-90">
+      <div className="bg-white p-8 rounded-xl shadow-lg h-145 max-w-md z-10 w-90">
         <h1 className="text-center text-3xl font-semibold mb-1">
           My <span className="text-orange-500 font-bold">Book</span>
         </h1>
         <h2 className="text-center text-3xl font-light text-gray-700 mb-6">Shelf</h2>
 
-       <div className="text-center mt-6 mb-8">
-
+        <div className="text-center mt-6 mb-8">
           <h3 className="text-xl font-medium text-gray-800 mb-2">Verification</h3>
           <p className="text-sm text-gray-500">Check your E-mail for OTP</p>
         </div>

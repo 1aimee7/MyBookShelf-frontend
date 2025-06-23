@@ -1,15 +1,17 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 
 export default function Verified() {
+  const router = useRouter();
+
   const handleLogin = () => {
-    window.location.href = '/login'; // Added navigation logic
+    router.push("/"); // Redirect to Home page
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background with exact SVG from image */}
       <div className="absolute inset-0 -z-10" style={{ background: "white" }}>
         <svg
           className="w-full h-full"
@@ -27,12 +29,11 @@ export default function Verified() {
         </svg>
       </div>
 
-      {/* Verified Form */}
       <div className="bg-white p-8 rounded-xl shadow-lg max-w-md z-10 text-center">
         <h1 className="text-center text-3xl font-semibold mb-1">
           My <span className="text-orange-500 font-bold">Book</span> Shelf
         </h1>
-        <p className="text-center text-gray-490 mb-6 text-sm leading-tight">
+        <p className="text-center text-gray-500 mb-6 text-sm leading-tight">
           Verification
         </p>
 

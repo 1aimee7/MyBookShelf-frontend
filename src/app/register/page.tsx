@@ -1,20 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form submitted");
-  };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleLoginNow = () => {
-    window.location.href = '/login';
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate API call to backend for registration
+    console.log("Form submitted", { email, password });
+    const response = { success: true }; // Mock response
+    if (response.success) {
+      router.push("/otp"); // Redirect to OTP page
+    } else {
+      alert("Registration failed");
+    }
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background with exact SVG from image */}
       <div className="absolute inset-0 -z-10" style={{ background: "white" }}>
         <svg
           className="w-full h-full"
@@ -32,39 +39,27 @@ export default function Register() {
         </svg>
       </div>
 
-      {/* Registration Form */}
-      <div className="bg-white p-8 rounded-xl  shadow-lg h-145 max-w-md z-10 w-90">
+      <div className="bg-white p-8 rounded-xl shadow-lg h-130 max-w-md z-10 w-85">
         <h1 className="text-center text-3xl font-semibold mb-1">
           My <span className="text-orange-500 font-bold">Book</span> Shelf
         </h1>
         <p className="text-center text-gray-500 mb-6 text-sm leading-tight">
-          Registration
+          Welcome!
           <br />
-          For Both Staff & Students
+          Create your Digital Library account
         </p>
 
-        <div>
-          <div className="mb-4">
-            <label htmlFor="regno" className="block text-gray-700 text-sm mb-1">
-              Reg No.
-            </label>
-            <input
-              id="regno"
-              type="text"
-              placeholder="College Reg. No."
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
-              required
-            />
-          </div>
-
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700 text-sm mb-1">
-              College Email ID
+              Email
             </label>
             <input
               id="email"
               type="email"
-              placeholder="username@collegename.ac.in"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="username@collegename.ac.za"
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
@@ -77,45 +72,42 @@ export default function Register() {
             <input
               id="password"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="********"
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
             />
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="confirmPassword" className="block text-gray-700 text-sm mb-1">
-              Confirm Password
+          <div className="mb-6 flex items-center justify-between text-sm">
+            <label className="flex items-center text-gray-700">
+              <input type="checkbox" className="mr-2 accent-orange-500" /> Remember me
             </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              placeholder="********"
-              className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
-              required
-            />
+            <a href="/login" className="text-blue-600 hover:underline">
+              Already have an account?
+            </a>
           </div>
 
           <button
             type="submit"
-            onClick={handleSubmit}
             className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
           >
             Register
           </button>
 
-          <div className="mt-4 flex justify-between text-sm text-gray-600">
+          <div className="mt-4 flex justify-between text-gray-600 text-xs">
             <span>
-              Already a User?{" "}
-              <button onClick={handleLoginNow} className="text-blue-600 hover:underline">
-                Login now
-              </button>
+              Back to{" "}
+              <a href="/login" className="text-blue-600 hover:underline text-xs">
+                Login
+              </a>
             </span>
-            <button className="text-blue-600 hover:underline">
+            <a href="#" className="text-blue-600 hover:underline text-xs">
               Use as Guest
-            </button>
+            </a>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

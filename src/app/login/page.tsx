@@ -1,16 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted");
+    // Simulate API call to backend for login
+    console.log("Form submitted", { email, password });
+    const response = { success: true }; // Mock response
+    if (response.success) {
+      router.push("/otp"); // Redirect to OTP page
+    } else {
+      alert("Login failed");
+    }
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background with exact SVG from image */}
       <div className="absolute inset-0 -z-10" style={{ background: "white" }}>
         <svg
           className="w-full h-full"
@@ -28,8 +39,7 @@ export default function Login() {
         </svg>
       </div>
 
-      {/* Login Form */}
-      <div className="bg-white p-8 rounded-xl  shadow-lg h-130 max-w-md z-10 w-85">
+      <div className="bg-white p-8 rounded-xl shadow-lg h-130 max-w-md z-10 w-85">
         <h1 className="text-center text-3xl font-semibold mb-1">
           My <span className="text-orange-500 font-bold">Book</span> Shelf
         </h1>
@@ -47,6 +57,8 @@ export default function Login() {
             <input
               id="email"
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="username@collegename.ac.za"
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
@@ -60,6 +72,8 @@ export default function Login() {
             <input
               id="password"
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="********"
               className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-400"
               required
@@ -85,10 +99,9 @@ export default function Login() {
           <div className="mt-4 flex justify-between text-gray-600 text-xs">
             <span>
               New User?{" "}
-             <a href="/register" className="text-blue-600 hover:underline text-xs">
-  Register Here
-</a>
-
+              <a href="/register" className="text-blue-600 hover:underline text-xs">
+                Register Here
+              </a>
             </span>
             <a href="#" className="text-blue-600 hover:underline text-xs">
               Use as Guest
