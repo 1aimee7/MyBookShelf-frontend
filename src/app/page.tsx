@@ -34,6 +34,6 @@ export default function Home() {
           Register
         </button>
       </div>
-    </div>
-  );
+    </div>
+  );
 }
