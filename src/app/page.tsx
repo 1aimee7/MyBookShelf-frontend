@@ -25,11 +25,11 @@ export default function Home() {
   }, []);
 
   const handleLogin = () => {
-    window.location.href = "/login";
+    window.location.href = "/auth/login";
   };
 
   const handleRegister = () => {
-    window.location.href = "/register";
+    window.location.href = "auth/register";
   };
 
   const FloatingBook = ({
