@@ -5,6 +5,11 @@ export interface Book {
   year: number;
   rating: number;
   coverImage: string;
+  category: string[];  // categories of the book
+  status: "In-Shelf" | "Borrowed" | "Reserved"; // status of the book
+  availability: string; // e.g. "Available", "Not Available"
+  location: string;  // physical location or section in library
+  borrowedBy?: string; // optional field for who borrowed the book
 }
 
 export const books: Book[] = [
@@ -15,6 +20,10 @@ export const books: Book[] = [
     year: 2000,
     rating: 4.8,
     coverImage: "/books/dont-make-me-think.jpg",
+    category: ["UX", "Design"],
+    status: "In-Shelf",
+    availability: "Available",
+    location: "Shelf A3",
   },
   {
     id: 2,
@@ -23,6 +32,11 @@ export const books: Book[] = [
     year: 1988,
     rating: 4.5,
     coverImage: "/books/design-of-everyday-things.jpg",
+    category: ["Design", "Engineering"],
+    status: "Borrowed",
+    availability: "Not Available",
+    location: "Shelf B1",
+    borrowedBy: "John Doe",
   },
   {
     id: 3,
@@ -31,6 +45,10 @@ export const books: Book[] = [
     year: 2016,
     rating: 4.6,
     coverImage: "/books/sprint.jpg",
+    category: ["Management", "Innovation"],
+    status: "In-Shelf",
+    availability: "Available",
+    location: "Shelf C2",
   },
   {
     id: 4,
@@ -39,6 +57,11 @@ export const books: Book[] = [
     year: 2016,
     rating: 4.5,
     coverImage: "/books/lean-ux.jpg",
+    category: ["UX", "Design"],
+    status: "Reserved",
+    availability: "Not Available",
+    location: "Shelf A4",
+    borrowedBy: "Jane Smith",
   },
   {
     id: 5,
@@ -47,6 +70,10 @@ export const books: Book[] = [
     year: 2020,
     rating: 4.7,
     coverImage: "/books/react.jpg",
+    category: ["Programming", "JavaScript"],
+    status: "In-Shelf",
+    availability: "Available",
+    location: "Shelf D1",
   },
   {
     id: 6,
@@ -55,6 +82,10 @@ export const books: Book[] = [
     year: 1997,
     rating: 4.6,
     coverImage: "/books/rich-dad-poor-dad.jpg",
+    category: ["Finance", "Self-help"],
+    status: "In-Shelf",
+    availability: "Available",
+    location: "Shelf E3",
   },
   {
     id: 7,
@@ -63,13 +94,22 @@ export const books: Book[] = [
     year: 2002,
     rating: 4.9,
     coverImage: "/books/harry-potter.jpg",
+    category: ["Fiction", "Fantasy"],
+    status: "Borrowed",
+    availability: "Not Available",
+    location: "Shelf F5",
+    borrowedBy: "Alice Cooper",
   },
-    {
+  {
     id: 8,
     title: "You Don't Know JS",
     author: "Kyle Simpson",
     year: 2014,
     rating: 4.9,
     coverImage: "/books/scope-closure.jpg",
+    category: ["Programming", "JavaScript"],
+    status: "In-Shelf",
+    availability: "Available",
+    location: "Shelf D2",
   },
 ];
