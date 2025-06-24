@@ -62,8 +62,14 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,140,0,0.08),transparent_50%)]"></div>
         <div className="absolute inset-0 opacity-40">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-200/30 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
-          <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-orange-300/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: "2s" }}></div>
-          <div className="absolute bottom-1/4 left-1/2 w-72 h-72 bg-orange-100/40 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style={{ animationDelay: "4s" }}></div>
+          <div
+            className="absolute top-3/4 right-1/4 w-80 h-80 bg-orange-300/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"
+            style={{ animationDelay: "2s" }}
+          ></div>
+          <div
+            className="absolute bottom-1/4 left-1/2 w-72 h-72 bg-orange-100/40 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"
+            style={{ animationDelay: "4s" }}
+          ></div>
         </div>
       </div>
 
@@ -134,9 +140,21 @@ export default function Home() {
             isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           }`}
         >
-          <FeatureCard icon={<Library className="text-white" size={28} />} title="Smart Organization" description="AI-powered categorization that learns your reading preferences and suggests the perfect organization system." />
-          <FeatureCard icon={<Users className="text-white" size={28} />} title="Reading Community" description="Connect with fellow book lovers, share reviews, and discover your next favorite read through our vibrant community." />
-          <FeatureCard icon={<Star className="text-white" size={28} />} title="Personalized Insights" description="Track your reading habits, set goals, and receive tailored recommendations based on your unique taste." />
+          <FeatureCard
+            icon={<Library className="text-white" size={28} />}
+            title="Smart Organization"
+            description="AI-powered categorization that learns your reading preferences and suggests the perfect organization system."
+          />
+          <FeatureCard
+            icon={<Users className="text-white" size={28} />}
+            title="Reading Community"
+            description="Connect with fellow book lovers, share reviews, and discover your next favorite read through our vibrant community."
+          />
+          <FeatureCard
+            icon={<Star className="text-white" size={28} />}
+            title="Personalized Insights"
+            description="Track your reading habits, set goals, and receive tailored recommendations based on your unique taste."
+          />
         </div>
 
         {/* Stats Section */}
@@ -166,7 +184,7 @@ export default function Home() {
             isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
           }`}
         >
-          <p className="text-gray-500 text-sm">Join thousands of readers who've transformed their reading experience</p>
+          <p className="text-gray-500 text-sm">Join thousands of readers who&apos;ve transformed their reading experience</p>
         </div>
       </div>
     </div>
