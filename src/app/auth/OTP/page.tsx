@@ -32,7 +32,7 @@ export default function OTP() {
     // Simulate API call to verify OTP
     const response = { success: true }; // Mock response
     if (response.success) {
-      router.push("/verified"); // Redirect to Verified page
+      router.push("/auth/verified"); // Redirect to Verified page
     } else {
       alert("Verification failed");
     }

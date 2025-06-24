@@ -23,7 +23,7 @@ const Sidebar = () => {
             <span>Home</span>
           </a>
           <a
-            href="#"
+            href="/search"
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors font-medium text-sm"
           >
             <Search size={16} />
