@@ -7,7 +7,7 @@ export default function Verified() {
   const router = useRouter();
 
   const handleLogin = () => {
-    router.push("/"); // Redirect to Home page
+    router.push("/dashboard"); // Redirect to Home page
   };
 
   return (
