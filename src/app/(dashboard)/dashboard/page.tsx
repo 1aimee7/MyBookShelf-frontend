@@ -30,7 +30,7 @@ export default function DashboardPage() {
     { id: 10, title: "Holy Bible", coverImage: "/books/holy-bible.jpg" },
     { id: 7, title: "Harry Potter...", coverImage: "/books/harry-potter.jpg" },
     { id: 4, title: "Lean UX...", coverImage: "/books/lean-ux.jpg" },
-    { id: 1, title: "Don't Make Me Think", coverImage: "/books/dont-make-me-think.jpg" },
+    { id: 1, title: "Don&apos;t Make Me Think", coverImage: "/books/dont-make-me-think.jpg" },
   ];
 
   return (
@@ -40,10 +40,15 @@ export default function DashboardPage() {
       {/* ========================================================= */}
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Today's Quote Box - now 1/3 */}
-        <div className="lg:w-1/3 bg-orange-400 text-white rounded-2xl p-6 lg:p-8 flex flex-col justify-between" style={{ minHeight: '220px' }}>
+        <div
+          className="lg:w-1/3 bg-orange-400 text-white rounded-2xl p-6 lg:p-8 flex flex-col justify-between"
+          style={{ minHeight: '220px' }}
+        >
           <div>
-            <h2 className="text-lg font-semibold mb-2">Today's Quote</h2>
-            <p className="text-xl leading-relaxed">"There is more treasure in books than in all the pirate's loot on Treasure Island."</p>
+            <h2 className="text-lg font-semibold mb-2">Today&apos;s Quote</h2>
+            <p className="text-xl leading-relaxed">
+              &quot;There is more treasure in books than in all the pirate&apos;s loot on Treasure Island.&quot;
+            </p>
           </div>
           <div className="flex justify-between items-end mt-4">
             <p className="text-right text-sm opacity-80">- Walt Disney</p>
@@ -62,7 +67,10 @@ export default function DashboardPage() {
           </div>
           <div className="bg-white p-4 rounded-r-lg shadow-md border flex-1 flex items-center justify-around space-x-2">
             {newArrivalsData.map((book) => (
-              <div key={`new-${book.id}`} className="w-20 h-32 sm:w-24 sm:h-36 relative rounded-md overflow-hidden border hover:shadow-lg transition-shadow">
+              <div
+                key={`new-${book.id}`}
+                className="w-20 h-32 sm:w-24 sm:h-36 relative rounded-md overflow-hidden border hover:shadow-lg transition-shadow"
+              >
                 <Image
                   src={book.coverImage}
                   alt={book.title}
