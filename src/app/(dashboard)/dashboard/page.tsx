@@ -27,7 +27,7 @@ export default function DashboardPage() {
   const recentReadings = [...displayedBooks].reverse().slice(0, 8);
 
   const newArrivalsData = [
-    { id: 10, title: "Holy Bible", coverImage: "/books/holy-bible.jpg" },
+    { id: 10, title: "Holy Bible", coverImage: "/books/Holybible.png" },
     { id: 7, title: "Harry Potter...", coverImage: "/books/harry-potter.jpg" },
     { id: 4, title: "Lean UX...", coverImage: "/books/lean-ux.jpg" },
     { id: 1, title: "Don&apos;t Make Me Think", coverImage: "/books/dont-make-me-think.jpg" },
