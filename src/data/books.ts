@@ -112,4 +112,17 @@ export const books: Book[] = [
     availability: "Available",
     location: "Shelf D2",
   },
+
+   {
+    id: 9,
+    title: "Holy bible",
+    author: "Benigne",
+    year: 2015,
+    rating: 4.9,
+    coverImage: "/books/Holybible.png",
+    category: ["Programming", "JavaScript"],
+    status: "In-Shelf",
+    availability: "Available",
+    location: "Shelf D2",
+  },
 ];
