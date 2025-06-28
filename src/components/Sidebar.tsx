@@ -16,7 +16,7 @@ const Sidebar = () => {
 
         <nav className="space-y-3">
           <a
-            href="#"
+            href="/dashboard"
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors text-sm"
           >
             <Home size={16} />
@@ -30,14 +30,14 @@ const Sidebar = () => {
             <span>Search</span>
           </a>
           <a
-            href="#"
+            href="/myshelf"
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors text-sm"
           >
             <BarChart3 size={16} />
             <span>My Shelf</span>
           </a>
           <a
-            href="#"
+            href="/contribute"
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors text-sm"
           >
             <Gift size={16} />
