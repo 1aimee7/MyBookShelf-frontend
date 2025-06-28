@@ -5,11 +5,20 @@ export interface Book {
   year: number;
   rating: number;
   coverImage: string;
-  category: string[];  // categories of the book
+  category: string[]; // categories of the book
   status: "In-Shelf" | "Borrowed" | "Reserved"; // status of the book
   availability: string; // e.g. "Available", "Not Available"
-  location: string;  // physical location or section in library
+  location: string; // physical location or section in library
   borrowedBy?: string; // optional field for who borrowed the book
+
+  // optional fields
+  publisher?: string;
+  pages?: number;
+  overview?: string;
+  language?: string;
+  currentlyReading?: number;
+  haveRead?: number;
+  edition?: string;  // added edition field, e.g. "Second Edition"
 }
 
 export const books: Book[] = [
@@ -24,6 +33,13 @@ export const books: Book[] = [
     status: "In-Shelf",
     availability: "Available",
     location: "Shelf A3",
+    publisher: "New Riders Press",
+    pages: 216,
+    overview: "A guide to intuitive web design and usability principles.",
+    language: "English",
+    currentlyReading: 14,
+    haveRead: 67,
+    edition: "Second Edition",
   },
   {
     id: 2,
@@ -37,6 +53,13 @@ export const books: Book[] = [
     availability: "Not Available",
     location: "Shelf B1",
     borrowedBy: "John Doe",
+    publisher: "Basic Books",
+    pages: 240,
+    overview: "Explores how design serves as communication between object and user.",
+    language: "English",
+    currentlyReading: 10,
+    haveRead: 58,
+    edition: "First Edition",
   },
   {
     id: 3,
@@ -49,6 +72,13 @@ export const books: Book[] = [
     status: "In-Shelf",
     availability: "Available",
     location: "Shelf C2",
+    publisher: "Simon & Schuster",
+    pages: 288,
+    overview: "A five-day process for solving problems and testing new ideas.",
+    language: "English",
+    currentlyReading: 8,
+    haveRead: 41,
+    edition: "1st Edition",
   },
   {
     id: 4,
@@ -62,6 +92,13 @@ export const books: Book[] = [
     availability: "Not Available",
     location: "Shelf A4",
     borrowedBy: "Jane Smith",
+    publisher: "O'Reilly Media",
+    pages: 240,
+    overview: "Focuses on the experience under design, not deliverables.",
+    language: "English",
+    currentlyReading: 11,
+    haveRead: 53,
+    edition: "2nd Edition",
   },
   {
     id: 5,
@@ -74,6 +111,13 @@ export const books: Book[] = [
     status: "In-Shelf",
     availability: "Available",
     location: "Shelf D1",
+    publisher: "Leanpub",
+    pages: 350,
+    overview: "Hands-on guide to learning React from fundamentals to advanced concepts.",
+    language: "English",
+    currentlyReading: 20,
+    haveRead: 85,
+    edition: "First Edition",
   },
   {
     id: 6,
@@ -86,6 +130,13 @@ export const books: Book[] = [
     status: "In-Shelf",
     availability: "Available",
     location: "Shelf E3",
+    publisher: "Warner Books",
+    pages: 336,
+    overview: "Advocates financial literacy, investing, and entrepreneurship.",
+    language: "English",
+    currentlyReading: 9,
+    haveRead: 72,
+    edition: "Revised Edition",
   },
   {
     id: 7,
@@ -99,6 +150,13 @@ export const books: Book[] = [
     availability: "Not Available",
     location: "Shelf F5",
     borrowedBy: "Alice Cooper",
+    publisher: "Bloomsbury",
+    pages: 448,
+    overview: "Magical adventures continue in the second installment of the Harry Potter series.",
+    language: "English",
+    currentlyReading: 25,
+    haveRead: 100,
+    edition: "Second Edition",
   },
   {
     id: 8,
@@ -111,18 +169,33 @@ export const books: Book[] = [
     status: "In-Shelf",
     availability: "Available",
     location: "Shelf D2",
+    publisher: "O'Reilly Media",
+    pages: 278,
+    overview: "Deep dive into core JavaScript mechanisms for experienced developers.",
+    language: "English",
+    currentlyReading: 17,
+    haveRead: 66,
+    edition: "First Edition",
   },
-
-   {
+  {
     id: 9,
-    title: "Holy bible",
+    title: "Holy Bible",
     author: "Benigne",
     year: 2015,
     rating: 4.9,
     coverImage: "/books/Holybible.png",
-    category: ["Programming", "JavaScript"],
+    category: ["Religion", "Spirituality"],
     status: "In-Shelf",
     availability: "Available",
-    location: "Shelf D2",
-  },
+    location: "Shelf G1",
+    publisher: "Various",
+    pages: 1200,
+    overview: "Sacred scriptures of Christianity, containing the Old and New Testaments.",
+    language: "Multiple",
+    currentlyReading: 30,
+    haveRead: 300,
+    edition: "Multiple Editions",
+  }
 ];
+
+
