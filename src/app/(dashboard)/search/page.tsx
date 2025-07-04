@@ -1,15 +1,39 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { books } from "@/data/books";
 import { SearchContext } from "@/context/SearchContext";
 import Image from "next/image";
-import Link from "next/link"; // The import is correct
+import Link from "next/link";
 
 export default function SearchPage() {
   const { searchTerm } = useContext(SearchContext);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [favorites, setFavorites] = useState(new Set<number>());
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+
+  // Load favorites from localStorage when component mounts
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favoriteBooks");
+    if (storedFavorites) {
+      setFavorites(new Set(JSON.parse(storedFavorites)));
+    }
+  }, []);
+
+  // Update localStorage when favorites change
+  useEffect(() => {
+    localStorage.setItem("favoriteBooks", JSON.stringify(Array.from(favorites)));
+  }, [favorites]);
+
+  const toggleFavorite = (bookId: number) => {
+    const updatedFavorites = new Set(favorites);
+    if (updatedFavorites.has(bookId)) {
+      updatedFavorites.delete(bookId);
+    } else {
+      updatedFavorites.add(bookId);
+    }
+    setFavorites(updatedFavorites);
+    localStorage.setItem("favoriteBooks", JSON.stringify(Array.from(updatedFavorites)));
+  };
 
   const filteredBooks = books.filter((book) => {
     const categoryList: string[] = book.category ?? [];
@@ -24,20 +48,16 @@ export default function SearchPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const toggleFavorite = (bookId: number) => {
-    const newFavorites = new Set(favorites);
-    if (newFavorites.has(bookId)) {
-      newFavorites.delete(bookId);
-    } else {
-      newFavorites.add(bookId);
-    }
-    setFavorites(newFavorites);
-  };
-
   return (
     <div className="bg-gray-50 text-black">
+      {/* Filter Header */}
       <div className="px-4 py-2 bg-white border-b border-gray-200 mb-4 rounded-lg shadow-sm">
-        <label htmlFor="category-select" className="text-sm font-medium text-gray-700 mr-2">Browse by Category:</label>
+        <label
+          htmlFor="category-select"
+          className="text-sm font-medium text-gray-700 mr-2"
+        >
+          Browse by Category:
+        </label>
         <select
           id="category-select"
           value={selectedCategory}
@@ -45,13 +65,18 @@ export default function SearchPage() {
           className="px-2 py-1 border border-gray-300 rounded bg-white text-sm"
         >
           <option>All</option>
+          <option>Design</option>
           <option>Engineering</option>
-          <option>Medical</option>
-          <option>Arts & Science</option>
-          <option>Architecture</option>
-          <option>Law</option>
+          <option>Programming</option>
+          <option>JavaScript</option>
+          <option>UX</option>
+          <option>Finance</option>
+          <option>Religion</option>
+          <option>Fiction</option>
         </select>
       </div>
+
+      {/* Results Table */}
       <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
@@ -92,23 +117,24 @@ export default function SearchPage() {
                   <td className="px-4 py-3 text-sm">{availability}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${ isInShelf ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700" }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        isInShelf ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                      }`}>
                         {status}
                       </span>
-                      <button className="text-gray-400 hover:text-red-500" onClick={() => toggleFavorite(book.id)}>
+                      <button
+                        className="text-gray-400 hover:text-red-500"
+                        onClick={() => toggleFavorite(book.id)}
+                        title={favorites.has(book.id) ? "Remove from Favorites" : "Add to Favorites"}
+                      >
                         {favorites.has(book.id) ? "❤️" : "🤍"}
                       </button>
-
-                      {/* ========================================================= */}
-                      {/*  THE FIX IS HERE: We remove the `<a>` tag               */}
-                      {/* ========================================================= */}
                       <Link 
                         href={`/preview/${book.id}`}
                         className="text-purple-600 hover:text-purple-800 text-sm font-medium"
                       >
                         Preview
                       </Link>
-
                     </div>
                   </td>
                 </tr>
@@ -116,6 +142,12 @@ export default function SearchPage() {
             })}
           </tbody>
         </table>
+
+        {filteredBooks.length === 0 && (
+          <div className="text-center text-sm text-gray-500 p-6">
+            No books match your search criteria.
+          </div>
+        )}
       </div>
     </div>
   );
