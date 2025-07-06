@@ -1,15 +1,21 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { books } from "@/data/books";
 import { SearchContext } from "@/context/SearchContext";
 import Image from "next/image";
-import Link from "next/link"; // The import is correct
+import Link from "next/link";
 
 export default function SearchPage() {
   const { searchTerm } = useContext(SearchContext);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [favorites, setFavorites] = useState(new Set<number>());
+  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [hasMounted, setHasMounted] = useState(false);
+
+  // Set mounted flag on client only
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const filteredBooks = books.filter((book) => {
     const categoryList: string[] = book.category ?? [];
@@ -25,19 +31,23 @@ export default function SearchPage() {
   });
 
   const toggleFavorite = (bookId: number) => {
-    const newFavorites = new Set(favorites);
-    if (newFavorites.has(bookId)) {
-      newFavorites.delete(bookId);
-    } else {
-      newFavorites.add(bookId);
-    }
-    setFavorites(newFavorites);
+    setFavorites((prevFavorites) => {
+      const newFavorites = new Set(prevFavorites);
+      if (newFavorites.has(bookId)) {
+        newFavorites.delete(bookId);
+      } else {
+        newFavorites.add(bookId);
+      }
+      return newFavorites;
+    });
   };
 
   return (
     <div className="bg-gray-50 text-black">
       <div className="px-4 py-2 bg-white border-b border-gray-200 mb-4 rounded-lg shadow-sm">
-        <label htmlFor="category-select" className="text-sm font-medium text-gray-700 mr-2">Browse by Category:</label>
+        <label htmlFor="category-select" className="text-sm font-medium text-gray-700 mr-2">
+          Browse by Category:
+        </label>
         <select
           id="category-select"
           value={selectedCategory}
@@ -92,23 +102,35 @@ export default function SearchPage() {
                   <td className="px-4 py-3 text-sm">{availability}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${ isInShelf ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700" }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          isInShelf ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                        }`}
+                      >
                         {status}
                       </span>
-                      <button className="text-gray-400 hover:text-red-500" onClick={() => toggleFavorite(book.id)}>
-                        {favorites.has(book.id) ? "❤️" : "🤍"}
-                      </button>
 
-                      {/* ========================================================= */}
-                      {/*  THE FIX IS HERE: We remove the `<a>` tag               */}
-                      {/* ========================================================= */}
-                      <Link 
+                      {hasMounted ? (
+                        <button
+                          className="text-gray-400 hover:text-red-500"
+                          onClick={() => toggleFavorite(book.id)}
+                          aria-label={
+                            favorites.has(book.id) ? "Remove from favorites" : "Add to favorites"
+                          }
+                        >
+                          {favorites.has(book.id) ? "❤️" : "🤍"}
+                        </button>
+                      ) : (
+                        // Render a placeholder on SSR so markup stays the same
+                        <span aria-hidden="true">🤍</span>
+                      )}
+
+                      <Link
                         href={`/preview/${book.id}`}
                         className="text-purple-600 hover:text-purple-800 text-sm font-medium"
                       >
                         Preview
                       </Link>
-
                     </div>
                   </td>
                 </tr>

@@ -5,20 +5,26 @@ export interface Book {
   year: number;
   rating: number;
   coverImage: string;
-  category: string[]; // categories of the book
-  status: "In-Shelf" | "Borrowed" | "Reserved"; // status of the book
-  availability: string; // e.g. "Available", "Not Available"
-  location: string; // physical location or section in library
-  borrowedBy?: string; // optional field for who borrowed the book
-
-  // optional fields
-  publisher?: string;
-  pages?: number;
-  overview?: string;
-  language?: string;
+  category?: string[];
+  availability?: string;
+  status?: string;
+  edition?: string;
+  ratingsCount?: number;
   currentlyReading?: number;
   haveRead?: number;
-  edition?: string;  // added edition field, e.g. "Second Edition"
+  formats?: {
+    hardCopy: boolean;
+    ebook: boolean;
+    audiobook: boolean;
+  };
+  location?: string;
+  publisher?: string;
+  language?: string;
+  pages?: number;
+  description?: string;
+  authorBio?: string;
+  authorImage?: string;
+  borrowedBy?: string; // optional, added to support borrowedBy field
 }
 
 export const books: Book[] = [
@@ -29,17 +35,21 @@ export const books: Book[] = [
     year: 2000,
     rating: 4.8,
     coverImage: "/books/dont-make-me-think.jpg",
-    category: ["UX", "Design"],
+    category: ["Computer Science", "UX Design"],
+    availability: "10 Copies",
     status: "In-Shelf",
-    availability: "Available",
-    location: "Shelf A3",
-    publisher: "New Riders Press",
-    pages: 216,
-    overview: "A guide to intuitive web design and usability principles.",
-    language: "English",
-    currentlyReading: 14,
-    haveRead: 67,
     edition: "Second Edition",
+    ratingsCount: 50,
+    currentlyReading: 25,
+    haveRead: 119,
+    formats: { hardCopy: true, ebook: true, audiobook: true },
+    location: "CS A-15",
+    publisher: "New Riders Press",
+    language: "English",
+    pages: 216,
+    authorBio: "Steve Krug is a usability consultant...",
+    authorImage: "/authors/steve-krug.jpg",
+    description: "Since Don't Make Me Think was first published..."
   },
   {
     id: 2,
@@ -48,18 +58,14 @@ export const books: Book[] = [
     year: 1988,
     rating: 4.5,
     coverImage: "/books/design-of-everyday-things.jpg",
-    category: ["Design", "Engineering"],
+    category: ["Computer Science", "UX Design"],
     status: "Borrowed",
-    availability: "Not Available",
-    location: "Shelf B1",
-    borrowedBy: "John Doe",
     publisher: "Basic Books",
-    pages: 240,
-    overview: "Explores how design serves as communication between object and user.",
     language: "English",
-    currentlyReading: 10,
-    haveRead: 58,
-    edition: "First Edition",
+    pages: 368,
+    description: "A classic book on user-centered design.",
+    authorBio: "Don Norman is a cognitive scientist and usability engineer.",
+    authorImage: "/authors/don-norman.jpg"
   },
   {
     id: 3,
@@ -74,11 +80,11 @@ export const books: Book[] = [
     location: "Shelf C2",
     publisher: "Simon & Schuster",
     pages: 288,
-    overview: "A five-day process for solving problems and testing new ideas.",
+    description: "A five-day process for solving problems and testing new ideas.",
     language: "English",
     currentlyReading: 8,
     haveRead: 41,
-    edition: "1st Edition",
+    edition: "1st Edition"
   },
   {
     id: 4,
@@ -94,11 +100,11 @@ export const books: Book[] = [
     borrowedBy: "Jane Smith",
     publisher: "O'Reilly Media",
     pages: 240,
-    overview: "Focuses on the experience under design, not deliverables.",
+    description: "Focuses on the experience under design, not deliverables.",
     language: "English",
     currentlyReading: 11,
     haveRead: 53,
-    edition: "2nd Edition",
+    edition: "2nd Edition"
   },
   {
     id: 5,
@@ -113,11 +119,11 @@ export const books: Book[] = [
     location: "Shelf D1",
     publisher: "Leanpub",
     pages: 350,
-    overview: "Hands-on guide to learning React from fundamentals to advanced concepts.",
+    description: "Hands-on guide to learning React from fundamentals to advanced concepts.",
     language: "English",
     currentlyReading: 20,
     haveRead: 85,
-    edition: "First Edition",
+    edition: "First Edition"
   },
   {
     id: 6,
@@ -132,11 +138,11 @@ export const books: Book[] = [
     location: "Shelf E3",
     publisher: "Warner Books",
     pages: 336,
-    overview: "Advocates financial literacy, investing, and entrepreneurship.",
+    description: "Advocates financial literacy, investing, and entrepreneurship.",
     language: "English",
     currentlyReading: 9,
     haveRead: 72,
-    edition: "Revised Edition",
+    edition: "Revised Edition"
   },
   {
     id: 7,
@@ -152,11 +158,11 @@ export const books: Book[] = [
     borrowedBy: "Alice Cooper",
     publisher: "Bloomsbury",
     pages: 448,
-    overview: "Magical adventures continue in the second installment of the Harry Potter series.",
+    description: "Magical adventures continue in the second installment of the Harry Potter series.",
     language: "English",
     currentlyReading: 25,
     haveRead: 100,
-    edition: "Second Edition",
+    edition: "Second Edition"
   },
   {
     id: 8,
@@ -171,11 +177,11 @@ export const books: Book[] = [
     location: "Shelf D2",
     publisher: "O'Reilly Media",
     pages: 278,
-    overview: "Deep dive into core JavaScript mechanisms for experienced developers.",
+    description: "Deep dive into core JavaScript mechanisms for experienced developers.",
     language: "English",
     currentlyReading: 17,
     haveRead: 66,
-    edition: "First Edition",
+    edition: "First Edition"
   },
   {
     id: 9,
@@ -190,12 +196,10 @@ export const books: Book[] = [
     location: "Shelf G1",
     publisher: "Various",
     pages: 1200,
-    overview: "Sacred scriptures of Christianity, containing the Old and New Testaments.",
+    description: "Sacred scriptures of Christianity, containing the Old and New Testaments.",
     language: "Multiple",
     currentlyReading: 30,
     haveRead: 300,
-    edition: "Multiple Editions",
+    edition: "Multiple Editions"
   }
 ];
-
-
