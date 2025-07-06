@@ -12,10 +12,35 @@ export default function SearchPage() {
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [hasMounted, setHasMounted] = useState(false);
 
-  // Set mounted flag on client only
+  // Set mounted flag on client only (prevents hydration mismatch)
   useEffect(() => {
     setHasMounted(true);
   }, []);
+
+  // Load favorites from localStorage
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favoriteBooks");
+    if (storedFavorites) {
+      setFavorites(new Set(JSON.parse(storedFavorites)));
+    }
+  }, []);
+
+  // Save favorites to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("favoriteBooks", JSON.stringify(Array.from(favorites)));
+  }, [favorites]);
+
+  const toggleFavorite = (bookId: number) => {
+    setFavorites((prev) => {
+      const updated = new Set(prev);
+      if (updated.has(bookId)) {
+        updated.delete(bookId);
+      } else {
+        updated.add(bookId);
+      }
+      return updated;
+    });
+  };
 
   const filteredBooks = books.filter((book) => {
     const categoryList: string[] = book.category ?? [];
@@ -30,20 +55,9 @@ export default function SearchPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const toggleFavorite = (bookId: number) => {
-    setFavorites((prevFavorites) => {
-      const newFavorites = new Set(prevFavorites);
-      if (newFavorites.has(bookId)) {
-        newFavorites.delete(bookId);
-      } else {
-        newFavorites.add(bookId);
-      }
-      return newFavorites;
-    });
-  };
-
   return (
     <div className="bg-gray-50 text-black">
+      {/* Filter Header */}
       <div className="px-4 py-2 bg-white border-b border-gray-200 mb-4 rounded-lg shadow-sm">
         <label htmlFor="category-select" className="text-sm font-medium text-gray-700 mr-2">
           Browse by Category:
@@ -55,13 +69,18 @@ export default function SearchPage() {
           className="px-2 py-1 border border-gray-300 rounded bg-white text-sm"
         >
           <option>All</option>
+          <option>Design</option>
           <option>Engineering</option>
-          <option>Medical</option>
-          <option>Arts & Science</option>
-          <option>Architecture</option>
-          <option>Law</option>
+          <option>Programming</option>
+          <option>JavaScript</option>
+          <option>UX</option>
+          <option>Finance</option>
+          <option>Religion</option>
+          <option>Fiction</option>
         </select>
       </div>
+
+      {/* Results Table */}
       <div className="bg-white rounded-lg shadow-sm overflow-x-auto">
         <table className="w-full">
           <thead className="bg-gray-50 border-b border-gray-200">
@@ -121,7 +140,6 @@ export default function SearchPage() {
                           {favorites.has(book.id) ? "❤️" : "🤍"}
                         </button>
                       ) : (
-                        // Render a placeholder on SSR so markup stays the same
                         <span aria-hidden="true">🤍</span>
                       )}
 
@@ -138,7 +156,14 @@ export default function SearchPage() {
             })}
           </tbody>
         </table>
+
+        {filteredBooks.length === 0 && (
+          <div className="text-center text-sm text-gray-500 p-6">
+            No books match your search criteria.
+          </div>
+        )}
       </div>
     </div>
   );
 }
+

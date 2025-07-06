@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { books } from '@/data/books'; // Import initial book data
-import Image from 'next/image';
+import { Check, ArrowLeft } from 'lucide-react';
+import { books } from '@/data/books'; // Import books from data/books.ts
 
 interface Contribution {
   bookName: string;
@@ -40,7 +40,12 @@ export default function Contribute() {
   });
 
   const [message, setMessage] = useState<string>('');
-  const [contributions, setContributions] = useState<Book[]>(books); // Use books from data/books.ts as initial state
+  // Initialize contributions with books from data/books.ts
+  const [contributions, setContributions] = useState<Book[]>(() => {
+    // In a real app, you would combine books from data/books.ts with any saved contributions
+    return books; // Use books from your data/books.ts file
+  });
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
 
   const handleInputChange = (field: keyof Omit<Contribution, 'availableFormats'>, value: string) => {
     setFormData(prev => ({
@@ -69,12 +74,21 @@ export default function Contribute() {
       id: contributions.length > 0 ? Math.max(...contributions.map(b => b.id)) + 1 : 1,
       title: formData.bookName,
       author: formData.authorName,
-      year: new Date().getFullYear(), // Default to current year (2025)
-      coverImage: `https://via.placeholder.com/80x112?text=${encodeURIComponent(formData.bookName)}`,
+      year: new Date().getFullYear(),
+      coverImage: `https://via.placeholder.com/200x280/ff6b35/ffffff?text=${encodeURIComponent(formData.bookName.split(' ').map(word => word[0]).join('').slice(0, 3))}`,
     };
 
-    setContributions(prev => [...prev, newBook]);
-    setMessage('Thank you for your contribution! We\'ll review it soon.');
+    setContributions(prev => {
+      const updatedBooks = [...prev, newBook];
+      // In a real app, you would save to localStorage here:
+      // localStorage.setItem('bookContributions', JSON.stringify(updatedBooks));
+      return updatedBooks;
+    });
+    setIsSubmitted(true);
+  };
+
+  const handleBackToForm = () => {
+    setIsSubmitted(false);
     setFormData({
       bookName: '',
       authorName: '',
@@ -83,12 +97,104 @@ export default function Contribute() {
       reason: '',
       availableFormats: { hardCopy: false, eBook: false, audioBook: false },
     });
-    setTimeout(() => setMessage(''), 3000); // Clear message after 3 seconds
+    setMessage('');
   };
 
+  // Success Page View
+  if (isSubmitted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 p-6">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center space-x-4">
+              <div className="text-2xl font-bold text-gray-800">
+                My <span className="text-orange-500">Book</span>
+              </div>
+              <div className="text-2xl font-bold text-gray-800">Shelf</div>
+            </div>
+            <button 
+              onClick={handleBackToForm}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+            >
+              <ArrowLeft size={20} />
+              <span>Back</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Left Column - Success Message */}
+            <div className="flex flex-col justify-center items-center text-center space-y-8">
+              <div className="w-32 h-32 bg-green-500 rounded-full flex items-center justify-center">
+                <Check size={64} className="text-white" />
+              </div>
+              
+              <div className="space-y-4">
+                <h1 className="text-3xl font-bold text-gray-800">
+                  Thank you For your Submission
+                </h1>
+                <p className="text-lg text-gray-600">
+                  You will be contacted shortly
+                </p>
+              </div>
+            </div>
+
+            {/* Right Column - Your Contributions */}
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                  Your <span className="text-orange-500">Contribution</span>
+                </h1>
+                <h2 className="text-2xl font-semibold text-gray-600">Helps Other to Learn</h2>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-medium text-gray-700 mb-6">Your Previous Contributions</h3>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {contributions.map((book: Book) => (
+                    <div key={book.id} className="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
+                      {/* Book Cover */}
+                      <div className="relative w-20 h-28 mx-auto mb-3">
+                        <img
+                          src={book.coverImage}
+                          alt={book.title}
+                          className="w-20 h-28 rounded object-cover shadow-md"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = `https://via.placeholder.com/200x280/ff6b35/ffffff?text=${encodeURIComponent(book.title.split(' ').map(word => word[0]).join('').slice(0, 3))}`;
+                          }}
+                        />
+                      </div>
+                      
+                      {/* Book Info */}
+                      <h4 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2">
+                        {book.title}
+                      </h4>
+                      <p className="text-xs text-gray-600 mb-1">{book.author}</p>
+                      <p className="text-xs text-gray-500">{book.year}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Form View
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="text-2xl font-bold text-gray-800">
+            My <span className="text-orange-500">Book</span> Shelf
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
           {/* Left Column - Form */}
@@ -96,7 +202,7 @@ export default function Contribute() {
             <h2 className="text-xl font-semibold text-gray-800 mb-6">Fill up Book Details</h2>
             
             {message && (
-              <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded">
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
                 {message}
               </div>
             )}
@@ -216,7 +322,7 @@ export default function Contribute() {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="w-full bg-orange-500 text-white py-3 px-4 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 font-medium"
+                className="w-full bg-orange-500 text-white py-3 px-4 rounded-md hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 font-medium transition-colors"
               >
                 Submit
               </button>
@@ -237,22 +343,16 @@ export default function Contribute() {
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {contributions.map((book: Book) => (
-                  <div key={book.id} className="bg-white rounded-lg shadow-sm p-4 text-center">
+                  <div key={book.id} className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition-shadow">
                     {/* Book Cover */}
                     <div className="relative w-16 h-20 mx-auto mb-3">
-                      <Image
+                      <img
                         src={book.coverImage}
                         alt={book.title}
-                        width={80}
-                        height={112}
                         className="w-16 h-20 rounded object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const fallback = document.createElement('div');
-                          fallback.className = 'w-16 h-20 bg-gradient-to-br from-orange-400 to-red-500 rounded flex items-center justify-center text-white text-xs font-bold text-center absolute top-0 left-0';
-                          fallback.textContent = book.title.split(' ').map(word => word[0]).join('').slice(0, 3);
-                          target.parentElement?.appendChild(fallback);
+                          target.src = `https://via.placeholder.com/200x280/ff6b35/ffffff?text=${encodeURIComponent(book.title.split(' ').map(word => word[0]).join('').slice(0, 3))}`;
                         }}
                       />
                     </div>

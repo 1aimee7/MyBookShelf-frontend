@@ -99,9 +99,9 @@ const Header = () => {
           </button>
           {isProfileOpen && (
             <div className="absolute top-full right-0 mt-2 w-48 bg-white border rounded-lg shadow-xl z-20">
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Favourite</a>
-              <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Payments</a>
+              <a href="/account" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
+              <a href="/favorite" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Favourite</a>
+              <a href="/payment" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Payments</a>
               <hr className="my-1"/>
               <a href="#" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</a>
             </div>
@@ -113,3 +113,4 @@ const Header = () => {
 };
 
 export default Header;
+
