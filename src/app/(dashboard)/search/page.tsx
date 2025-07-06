@@ -10,8 +10,14 @@ export default function SearchPage() {
   const { searchTerm } = useContext(SearchContext);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [hasMounted, setHasMounted] = useState(false);
 
-  // Load favorites from localStorage when component mounts
+  // Set mounted flag on client only (prevents hydration mismatch)
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  // Load favorites from localStorage
   useEffect(() => {
     const storedFavorites = localStorage.getItem("favoriteBooks");
     if (storedFavorites) {
@@ -19,20 +25,21 @@ export default function SearchPage() {
     }
   }, []);
 
-  // Update localStorage when favorites change
+  // Save favorites to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("favoriteBooks", JSON.stringify(Array.from(favorites)));
   }, [favorites]);
 
   const toggleFavorite = (bookId: number) => {
-    const updatedFavorites = new Set(favorites);
-    if (updatedFavorites.has(bookId)) {
-      updatedFavorites.delete(bookId);
-    } else {
-      updatedFavorites.add(bookId);
-    }
-    setFavorites(updatedFavorites);
-    localStorage.setItem("favoriteBooks", JSON.stringify(Array.from(updatedFavorites)));
+    setFavorites((prev) => {
+      const updated = new Set(prev);
+      if (updated.has(bookId)) {
+        updated.delete(bookId);
+      } else {
+        updated.add(bookId);
+      }
+      return updated;
+    });
   };
 
   const filteredBooks = books.filter((book) => {
@@ -52,10 +59,7 @@ export default function SearchPage() {
     <div className="bg-gray-50 text-black">
       {/* Filter Header */}
       <div className="px-4 py-2 bg-white border-b border-gray-200 mb-4 rounded-lg shadow-sm">
-        <label
-          htmlFor="category-select"
-          className="text-sm font-medium text-gray-700 mr-2"
-        >
+        <label htmlFor="category-select" className="text-sm font-medium text-gray-700 mr-2">
           Browse by Category:
         </label>
         <select
@@ -117,19 +121,29 @@ export default function SearchPage() {
                   <td className="px-4 py-3 text-sm">{availability}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        isInShelf ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          isInShelf ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+                        }`}
+                      >
                         {status}
                       </span>
-                      <button
-                        className="text-gray-400 hover:text-red-500"
-                        onClick={() => toggleFavorite(book.id)}
-                        title={favorites.has(book.id) ? "Remove from Favorites" : "Add to Favorites"}
-                      >
-                        {favorites.has(book.id) ? "❤️" : "🤍"}
-                      </button>
-                      <Link 
+
+                      {hasMounted ? (
+                        <button
+                          className="text-gray-400 hover:text-red-500"
+                          onClick={() => toggleFavorite(book.id)}
+                          aria-label={
+                            favorites.has(book.id) ? "Remove from favorites" : "Add to favorites"
+                          }
+                        >
+                          {favorites.has(book.id) ? "❤️" : "🤍"}
+                        </button>
+                      ) : (
+                        <span aria-hidden="true">🤍</span>
+                      )}
+
+                      <Link
                         href={`/preview/${book.id}`}
                         className="text-purple-600 hover:text-purple-800 text-sm font-medium"
                       >
@@ -152,3 +166,4 @@ export default function SearchPage() {
     </div>
   );
 }
+
