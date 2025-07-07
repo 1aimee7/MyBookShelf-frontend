@@ -41,7 +41,7 @@ const Header = () => {
   const filterOptions = ["All", "Title", "Author", "Text", "Subjects"];
 
   return (
-    <header className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-gray-200">
+    <header className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 text-black">
       
       {/* Search Bar Section */}
       <div ref={filterRef} className="relative flex items-center bg-white border rounded-lg p-2 w-full max-w-sm lg:max-w-md shadow-sm">
