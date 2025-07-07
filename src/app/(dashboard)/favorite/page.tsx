@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Heart, ArrowLeft } from 'lucide-react';
 import { books } from '@/data/books';
+import Image from "next/image";
 
 export default function Favorite() {
   const router = useRouter();
@@ -103,7 +104,7 @@ export default function Favorite() {
               <div key={book.id} className="grid grid-cols-12 gap-4 p-4 hover:bg-gray-50">
                 {/* Title Column */}
                 <div className="col-span-4 flex items-center space-x-3">
-                  <img
+                  <Image
                     src={book.coverImage}
                     alt={book.title}
                     className="w-12 h-16 rounded object-cover"
@@ -134,7 +135,9 @@ export default function Favorite() {
 
                 {/* Category */}
                 <div className="col-span-2 flex items-center">
-                  <div className="text-sm font-medium text-gray-800">{book.category.join(', ')}</div>
+                  <div className="text-sm font-medium text-gray-800">{book.category?.join(', ') || 'No Category'}</div>
+
+
                 </div>
 
                 {/* Availability */}

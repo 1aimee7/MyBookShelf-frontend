@@ -5,7 +5,8 @@ export interface Book {
   year: number;
   rating: number;
   coverImage: string;
-  category?: string[];
+  category: string[];
+
   availability?: string;
   status?: string;
   edition?: string;
@@ -24,7 +25,8 @@ export interface Book {
   description?: string;
   authorBio?: string;
   authorImage?: string;
-  borrowedBy?: string; // optional, added to support borrowedBy field
+  borrowedBy?: string;
+  borrowedDate?: string; // <-- Already added here
 }
 
 export const books: Book[] = [
@@ -60,6 +62,8 @@ export const books: Book[] = [
     coverImage: "/books/design-of-everyday-things.jpg",
     category: ["Computer Science", "UX Design"],
     status: "Borrowed",
+    borrowedBy: "John Doe",
+    borrowedDate: "2025-06-14", // ✅ added
     publisher: "Basic Books",
     language: "English",
     pages: 368,
@@ -156,6 +160,7 @@ export const books: Book[] = [
     availability: "Not Available",
     location: "Shelf F5",
     borrowedBy: "Alice Cooper",
+    borrowedDate: "2025-06-12", // ✅ added
     publisher: "Bloomsbury",
     pages: 448,
     description: "Magical adventures continue in the second installment of the Harry Potter series.",
