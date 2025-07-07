@@ -1,74 +1,51 @@
 "use client";
 
-import { useState } from 'react';
-import { books as initialBooks } from '@/data/books'; // Import books from data/books.ts
-import Image from 'next/image';
-
-// Define the Book interface based on data/books.ts
-interface Book {
-  id: number;
-  title: string;
-  author: string;
-  year: number;
-  rating: number;
-  coverImage: string;
-  category: string[];
-  status: "In-Shelf" | "Borrowed" | "Reserved";
-  availability: string;
-  location: string;
-  borrowedBy?: string;
-  borrowedDate?: string;
-  publisher?: string;
-  pages?: number;
-  overview?: string;
-  language?: string;
-  currentlyReading?: number;
-  haveRead?: number;
-  edition?: string;
-}
+import { useState } from "react";
+import { books as initialBooks, type Book } from "@/data/books"; // Import Book type and books data
+import Image from "next/image";
 
 export default function MyShelf() {
   // State for active tab
-  const [activeTab, setActiveTab] = useState('All Books');
+  const [activeTab, setActiveTab] = useState("All Books");
 
   // State to manage the selected book and form visibility
   const [selectedBook, setSelectedBook] = useState<Book | null>(null);
 
   // State to manage books list
-  const [books, setBooks] = useState(initialBooks);
+  const [books, setBooks] = useState<Book[]>(initialBooks);
 
   // Form state
   const [formData, setFormData] = useState({
-    fromDay: '04',
-    fromMonth: '03',
-    fromYear: '2023',
-    toDay: '08',
-    toMonth: '03',
-    toYear: '2023',
-    bookSerialNo: '84567023',
-    penalties: '100'
+    fromDay: "04",
+    fromMonth: "03",
+    fromYear: "2023",
+    toDay: "08",
+    toMonth: "03",
+    toYear: "2023",
+    bookSerialNo: "84567023",
+    penalties: "100",
   });
 
   // Define tabs
   const tabs = [
-    'All Books',
-    'Favourite',
-    'Borrowed Books',
-    'E-Books',
-    'Audio Books',
-    'Articles & Journals',
+    "All Books",
+    "Favourite",
+    "Borrowed Books",
+    "E-Books",
+    "Audio Books",
+    "Articles & Journals",
   ];
 
   // Filter books based on active tab
   const getFilteredBooks = () => {
     switch (activeTab) {
-      case 'Borrowed Books':
-        return books.filter(book => book.status === 'Borrowed');
-      case 'E-Books':
-      case 'Audio Books':
-      case 'Articles & Journals':
+      case "Borrowed Books":
+        return books.filter((book) => book.status === "Borrowed");
+      case "E-Books":
+      case "Audio Books":
+      case "Articles & Journals":
         return books;
-      case 'Favourite':
+      case "Favourite":
         return books.slice(0, 2);
       default:
         return books;
@@ -78,19 +55,20 @@ export default function MyShelf() {
   // Handle book return
   const handleReturn = (book: Book) => {
     setSelectedBook(book);
-    // Set form data based on book
-    const borrowedDate = new Date(book.borrowedDate || '2025-06-15');
-    const returnDate = new Date('2025-06-28T10:58:00Z'); // Updated to current time: 10:58 AM CAT
-    
+    // Set form data based on book borrowedDate
+  const borrowedDate = book.borrowedDate ? new Date(book.borrowedDate) : new Date("2025-06-15");
+
+    const returnDate = new Date("2025-06-28T10:58:00Z"); // Current time: 10:58 AM CAT
+
     setFormData({
-      fromDay: borrowedDate.getDate().toString().padStart(2, '0'),
-      fromMonth: (borrowedDate.getMonth() + 1).toString().padStart(2, '0'),
+      fromDay: borrowedDate.getDate().toString().padStart(2, "0"),
+      fromMonth: (borrowedDate.getMonth() + 1).toString().padStart(2, "0"),
       fromYear: borrowedDate.getFullYear().toString(),
-      toDay: returnDate.getDate().toString().padStart(2, '0'),
-      toMonth: (returnDate.getMonth() + 1).toString().padStart(2, '0'),
+      toDay: returnDate.getDate().toString().padStart(2, "0"),
+      toMonth: (returnDate.getMonth() + 1).toString().padStart(2, "0"),
       toYear: returnDate.getFullYear().toString(),
       bookSerialNo: `${book.id}${Math.floor(Math.random() * 1000000)}`,
-      penalties: '0'
+      penalties: "0",
     });
   };
 
@@ -98,26 +76,31 @@ export default function MyShelf() {
   const handleSubmitReturn = () => {
     if (selectedBook) {
       // Update book status to 'In-Shelf' locally
-      setBooks(books.map(book =>
-        book.id === selectedBook.id ? { ...book, status: 'In-Shelf' } : book
-      ));
+      setBooks(
+        books.map((book) =>
+          book.id === selectedBook.id ? { ...book, status: "In-Shelf" } : book
+        )
+      );
       setSelectedBook(null);
     }
   };
 
   // Handle form input changes
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   // BookCard component
   const BookCard = ({ book }: { book: Book }) => {
     const borrowedDate = book.borrowedDate ? new Date(book.borrowedDate) : null;
-    const dueDate = borrowedDate ? new Date(borrowedDate.getTime() + 14 * 24 * 60 * 60 * 1000) : new Date('2025-07-12');
-    const isOverdue = borrowedDate && dueDate < new Date('2025-06-28T10:58:00Z'); // Current time: 10:58 AM CAT
+    const dueDate = borrowedDate
+      ? new Date(borrowedDate.getTime() + 14 * 24 * 60 * 60 * 1000)
+      : new Date("2025-07-12");
+    const isOverdue =
+      borrowedDate && dueDate < new Date("2025-06-28T10:58:00Z"); // Current time: 10:58 AM CAT
 
     return (
       <div className="bg-white rounded-lg border border-gray-200 p-4 flex flex-col items-center relative">
@@ -131,33 +114,50 @@ export default function MyShelf() {
             className="w-20 h-28 rounded object-cover"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              const fallback = document.createElement('div');
-              fallback.className = 'w-20 h-28 bg-gradient-to-br from-orange-400 to-red-500 rounded flex items-center justify-center text-white text-xs font-bold text-center absolute top-0 left-0';
-              fallback.textContent = book.title.split(' ').map((word: string) => word[0]).join('').slice(0, 3);
+              target.style.display = "none";
+              const fallback = document.createElement("div");
+              fallback.className =
+                "w-20 h-28 bg-gradient-to-br from-orange-400 to-red-500 rounded flex items-center justify-center text-white text-xs font-bold text-center absolute top-0 left-0";
+              fallback.textContent = book.title
+                .split(" ")
+                .map((word) => word[0])
+                .join("")
+                .slice(0, 3);
               target.parentElement?.appendChild(fallback);
             }}
           />
         </div>
-        
+
         {/* Book Info */}
-        <h3 className="font-medium text-sm text-center mb-1 line-clamp-2">{book.title}</h3>
-        <p className="text-xs text-gray-600 mb-2">{book.author}, {book.year}</p>
+        <h3 className="font-medium text-sm text-center mb-1 line-clamp-2">
+          {book.title}
+        </h3>
+        <p className="text-xs text-gray-600 mb-2">
+          {book.author}, {book.year}
+        </p>
         <div className="flex items-center text-xs text-yellow-500 mb-2">
           <span>{'★'.repeat(Math.floor(book.rating))}</span>
           <span className="ml-1">{book.rating}/5</span>
         </div>
 
         {/* Status and Actions */}
-        {book.status === 'Borrowed' ? (
+        {book.status === "Borrowed" ? (
           <div className="w-full">
             <p className="text-xs text-gray-600 mb-1">Borrowed on</p>
             <p className="text-xs text-gray-800 font-medium mb-1">
-              {book.borrowedBy ? `by ${book.borrowedBy}` : 'Unknown'}
+              {book.borrowedBy ? `by ${book.borrowedBy}` : "Unknown"}
             </p>
             <p className="text-xs text-gray-600 mb-1">Submission Due</p>
-            <p className={`text-xs font-medium mb-3 ${isOverdue ? 'text-red-500' : 'text-gray-800'}`}>
-              {dueDate.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+            <p
+              className={`text-xs font-medium mb-3 ${
+                isOverdue ? "text-red-500" : "text-gray-800"
+              }`}
+            >
+              {dueDate.toLocaleDateString("en-US", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </p>
             <button className="w-full bg-gray-400 text-white px-3 py-1.5 rounded text-xs font-medium">
               Borrowed
@@ -184,51 +184,72 @@ export default function MyShelf() {
     );
   };
 
-  // Return Form Modal (kept exactly the same as provided)
-  const ReturnForm = ({ onClose, onSubmit }: { onClose: () => void; onSubmit: () => void }) => {
-
+  // Return Form Modal
+  const ReturnForm = ({
+    onClose,
+    onSubmit,
+  }: {
+    onClose: () => void;
+    onSubmit: () => void;
+  }) => {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg shadow-lg w-96 max-w-md mx-4">
           {/* Header */}
           <div className="bg-gray-100 px-6 py-4 rounded-t-lg border-b">
-            <h2 className="text-lg font-semibold text-gray-800">Fill Up the Details</h2>
+            <h2 className="text-lg font-semibold text-gray-800">
+              Fill Up the Details
+            </h2>
           </div>
-          
+
           {/* Form Content */}
           <div className="p-6 space-y-4">
             {/* From Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">From</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                From
+              </label>
               <div className="flex space-x-2">
-                <select 
+                <select
                   value={formData.fromDay}
-                  onChange={(e) => handleInputChange('fromDay', e.target.value)}
+                  onChange={(e) => handleInputChange("fromDay", e.target.value)}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
-                  {Array.from({length: 31}, (_, i) => i + 1).map(day => (
-                    <option key={day} value={day.toString().padStart(2, '0')}>
-                      {day.toString().padStart(2, '0')}
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                    <option
+                      key={day}
+                      value={day.toString().padStart(2, "0")}
+                    >
+                      {day.toString().padStart(2, "0")}
                     </option>
                   ))}
                 </select>
-                <select 
+                <select
                   value={formData.fromMonth}
-                  onChange={(e) => handleInputChange('fromMonth', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("fromMonth", e.target.value)
+                  }
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
-                  {Array.from({length: 12}, (_, i) => i + 1).map(month => (
-                    <option key={month} value={month.toString().padStart(2, '0')}>
-                      {month.toString().padStart(2, '0')}
-                    </option>
-                  ))}
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map(
+                    (month) => (
+                      <option
+                        key={month}
+                        value={month.toString().padStart(2, "0")}
+                      >
+                        {month.toString().padStart(2, "0")}
+                      </option>
+                    )
+                  )}
                 </select>
-                <select 
+                <select
                   value={formData.fromYear}
-                  onChange={(e) => handleInputChange('fromYear', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("fromYear", e.target.value)
+                  }
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
-                  {[2023, 2024, 2025].map(year => (
+                  {[2023, 2024, 2025].map((year) => (
                     <option key={year} value={year.toString()}>
                       {year}
                     </option>
@@ -239,36 +260,46 @@ export default function MyShelf() {
 
             {/* To Date */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">To</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                To
+              </label>
               <div className="flex space-x-2">
-                <select 
+                <select
                   value={formData.toDay}
-                  onChange={(e) => handleInputChange('toDay', e.target.value)}
+                  onChange={(e) => handleInputChange("toDay", e.target.value)}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
-                  {Array.from({length: 31}, (_, i) => i + 1).map(day => (
-                    <option key={day} value={day.toString().padStart(2, '0')}>
-                      {day.toString().padStart(2, '0')}
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                    <option
+                      key={day}
+                      value={day.toString().padStart(2, "0")}
+                    >
+                      {day.toString().padStart(2, "0")}
                     </option>
                   ))}
                 </select>
-                <select 
+                <select
                   value={formData.toMonth}
-                  onChange={(e) => handleInputChange('toMonth', e.target.value)}
+                  onChange={(e) => handleInputChange("toMonth", e.target.value)}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
-                  {Array.from({length: 12}, (_, i) => i + 1).map(month => (
-                    <option key={month} value={month.toString().padStart(2, '0')}>
-                      {month.toString().padStart(2, '0')}
-                    </option>
-                  ))}
+                  {Array.from({ length: 12 }, (_, i) => i + 1).map(
+                    (month) => (
+                      <option
+                        key={month}
+                        value={month.toString().padStart(2, "0")}
+                      >
+                        {month.toString().padStart(2, "0")}
+                      </option>
+                    )
+                  )}
                 </select>
-                <select 
+                <select
                   value={formData.toYear}
-                  onChange={(e) => handleInputChange('toYear', e.target.value)}
+                  onChange={(e) => handleInputChange("toYear", e.target.value)}
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
-                  {[2023, 2024, 2025].map(year => (
+                  {[2023, 2024, 2025].map((year) => (
                     <option key={year} value={year.toString()}>
                       {year}
                     </option>
@@ -279,11 +310,13 @@ export default function MyShelf() {
 
             {/* Book Serial No */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Book Serial No.</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Book Serial No.
+              </label>
               <input
                 type="text"
                 value={formData.bookSerialNo}
-                onChange={(e) => handleInputChange('bookSerialNo', e.target.value)}
+                onChange={(e) => handleInputChange("bookSerialNo", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="Enter book serial number"
               />
@@ -291,13 +324,15 @@ export default function MyShelf() {
 
             {/* Penalties */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Penalties</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Penalties
+              </label>
               <div className="relative">
                 <span className="absolute left-3 top-2 text-gray-500">₹</span>
                 <input
                   type="number"
                   value={formData.penalties}
-                  onChange={(e) => handleInputChange('penalties', e.target.value)}
+                  onChange={(e) => handleInputChange("penalties", e.target.value)}
                   className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="0"
                 />
@@ -337,8 +372,8 @@ export default function MyShelf() {
                 onClick={() => setActiveTab(tab)}
                 className={`py-4 px-2 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
                   activeTab === tab
-                    ? 'border-orange-500 text-orange-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? "border-orange-500 text-orange-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
                 }`}
               >
                 {tab}
@@ -364,10 +399,7 @@ export default function MyShelf() {
 
       {/* Return Form Modal */}
       {selectedBook && (
-        <ReturnForm
-          onClose={() => setSelectedBook(null)}
-          onSubmit={handleSubmitReturn}
-        />
+        <ReturnForm onClose={() => setSelectedBook(null)} onSubmit={handleSubmitReturn} />
       )}
     </div>
   );

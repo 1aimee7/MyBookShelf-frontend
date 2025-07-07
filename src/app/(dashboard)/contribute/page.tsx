@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Check, ArrowLeft } from 'lucide-react';
 import { books } from '@/data/books'; // Import books from data/books.ts
+import Image from "next/image";
 
 interface Contribution {
   bookName: string;
@@ -156,7 +157,7 @@ export default function Contribute() {
                     <div key={book.id} className="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow">
                       {/* Book Cover */}
                       <div className="relative w-20 h-28 mx-auto mb-3">
-                        <img
+                        <Image
                           src={book.coverImage}
                           alt={book.title}
                           className="w-20 h-28 rounded object-cover shadow-md"
@@ -346,7 +347,7 @@ export default function Contribute() {
                   <div key={book.id} className="bg-white rounded-lg shadow-sm p-4 text-center hover:shadow-md transition-shadow">
                     {/* Book Cover */}
                     <div className="relative w-16 h-20 mx-auto mb-3">
-                      <img
+                      <Image
                         src={book.coverImage}
                         alt={book.title}
                         className="w-16 h-20 rounded object-cover"
