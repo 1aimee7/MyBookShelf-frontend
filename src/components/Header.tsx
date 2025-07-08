@@ -25,7 +25,7 @@ const Header = () => {
       setCurrentTime(now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }));
       setCurrentDate(now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).replace(/ /g, "-"));
     };
-    updateTimeDate(); // Initial value: 04:44 PM and 07-Jul-2025
+    updateTimeDate(); // Initial value: 04:59 PM and 07-Jul-2025
     const interval = setInterval(updateTimeDate, 60000); // Update every minute
     return () => clearInterval(interval);
   }, []);
@@ -41,7 +41,7 @@ const Header = () => {
   }, []);
 
   const filterOptions = ["All", "Title", "Author", "Text", "Subjects"];
-  const langOptions = ["English", "French", "Swahili"]; // Removed "Lang" as it’s likely a placeholder
+  const langOptions = ["Lang", "English", "French", "Swahili"];
 
   return (
     <header className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 bg-white text-black shadow-sm">
@@ -108,7 +108,7 @@ const Header = () => {
             )}
           </div>
           <div className="flex items-center text-sm bg-gray-50 border border-gray-300 rounded-lg p-2 shadow-sm min-w-[100px]">
-            <Clock size={16} className="mr-2 text-gray-500" /> {currentTime || "04:44 PM"}
+            <Clock size={16} className="mr-2 text-gray-500" /> {currentTime || "04:59 PM"}
           </div>
           <div className="flex items-center text-sm bg-gray-50 border border-gray-300 rounded-lg p-2 shadow-sm min-w-[120px]">
             <Calendar size={16} className="mr-2 text-gray-500" /> {currentDate || "07-Jul-2025"}
