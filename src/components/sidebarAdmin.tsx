@@ -15,9 +15,9 @@ import {
 import clsx from "clsx";
 
 const navItems = [
-  { label: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
+  { label: "Dashboard", icon: LayoutDashboard, href: "/admin-dashboard" },
   { label: "Manage Books", icon: BookOpen, href: "/admin/books" },
-  { label: "Manage Users", icon: Users, href: "/admin/users" },
+  { label: "Manage Users", icon: Users, href: "/managerUser" },
   { label: "Borrowed Books", icon: Bookmark, href: "/admin/borrowed" },
   { label: "Messages", icon: MessageCircle, href: "/admin/messages" },
   { label: "Analytics", icon: BarChart3, href: "/admin/analytics" },

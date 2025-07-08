@@ -1,4 +1,4 @@
-"use client"; // Must be a client component to use hooks
+"use client"; 
 
 import { useState, useEffect, useContext } from "react";
 import { books } from '@/data/books';
