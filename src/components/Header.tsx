@@ -25,7 +25,7 @@ const Header = () => {
       setCurrentTime(now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }));
       setCurrentDate(now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).replace(/ /g, "-"));
     };
-    updateTimeDate(); // Set initial value to 04:36 PM and 07-Jul-2025
+    updateTimeDate(); // Initial value: 04:59 PM and 07-Jul-2025
     const interval = setInterval(updateTimeDate, 60000); // Update every minute
     return () => clearInterval(interval);
   }, []);
@@ -108,7 +108,7 @@ const Header = () => {
             )}
           </div>
           <div className="flex items-center text-sm bg-gray-50 border border-gray-300 rounded-lg p-2 shadow-sm min-w-[100px]">
-            <Clock size={16} className="mr-2 text-gray-500" /> {currentTime || "04:36 PM"}
+            <Clock size={16} className="mr-2 text-gray-500" /> {currentTime || "04:59 PM"}
           </div>
           <div className="flex items-center text-sm bg-gray-50 border border-gray-300 rounded-lg p-2 shadow-sm min-w-[120px]">
             <Calendar size={16} className="mr-2 text-gray-500" /> {currentDate || "07-Jul-2025"}
