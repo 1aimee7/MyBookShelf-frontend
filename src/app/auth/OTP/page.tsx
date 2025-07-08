@@ -4,8 +4,8 @@ import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 
 export default function OTP() {
-  const [otp, setOtp] = useState(['', '', '', '', '']);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+ const [otp, setOtp] = useState(['', '', '', '', '', '']);
+ const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
 
   const handleChange = (index: number, value: string) => {
