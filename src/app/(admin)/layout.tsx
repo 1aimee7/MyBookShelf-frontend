@@ -2,7 +2,7 @@
 
 import React from "react";
 import SidebarAdmin from "@/components/sidebarAdmin";
-import Header from "@/components/Header";
+import HeaderAdmin from "@/components/HeaderAdmin";
 import { SearchProvider } from "@/context/SearchContext";
 
 export default function DashboardAdminLayout({
@@ -18,7 +18,7 @@ export default function DashboardAdminLayout({
         {/* Content area pushed right with margin-left equal to sidebar width (w-64 = 16rem = 256px) */}
         <SearchProvider>
           <div className="flex flex-col ml-64">  
-            <Header />
+            <HeaderAdmin />
             <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-50">
               {children}
             </main>
