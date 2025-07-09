@@ -11,18 +11,24 @@ export default function DashboardAdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen p-3 sm:p-4 bg-gray-100">
-      <div className="relative bg-white rounded-xl shadow-lg overflow-hidden h-[calc(100vh-1.5rem)] sm:h-[calc(100vh-2rem)]">
+    <div className="min-h-screen flex bg-gray-100">
+      {/* Sidebar - fixed width */}
+      <div className="w-64 h-screen fixed top-0 left-0 z-40">
         <SidebarAdmin />
+      </div>
 
-        {/* Content area pushed right with margin-left equal to sidebar width (w-64 = 16rem = 256px) */}
+      {/* Main content area shifted right by sidebar width */}
+      <div className="flex-1 ml-64 flex flex-col min-h-screen overflow-hidden">
         <SearchProvider>
-          <div className="flex flex-col ml-64">  
+          {/* Header at top */}
+          <div className="flex-shrink-0">
             <HeaderAdmin />
-            <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-50">
-              {children}
-            </main>
           </div>
+
+          {/* Scrollable body content */}
+          <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-gray-50">
+            {children}
+          </main>
         </SearchProvider>
       </div>
     </div>
