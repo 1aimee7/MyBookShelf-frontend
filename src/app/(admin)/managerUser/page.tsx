@@ -99,7 +99,7 @@ export default function ManageUsers() {
   };
 
   return (
-    <div className="flex flex-col p-6 h-full">
+    <div className="flex flex-col p-6 h-full text-black">
       <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
       <div className="bg-white p-6 rounded-lg shadow flex flex-col flex-1">
         {/* Search and Filter */}
