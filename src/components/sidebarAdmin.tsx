@@ -16,7 +16,7 @@ const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, href: "/admin-dashboard" },
   { label: "Manage Books", icon: BookOpen, href: "/admin/books" },
   { label: "Manage Users", icon: Users, href: "/managerUser" },
-  { label: "Borrowed Books", icon: Bookmark, href: "/admin/borrowed" },
+  { label: "Borrowed Books", icon: Bookmark, href: "/borrowedBooks" },
   { label: "Messages", icon: MessageCircle, href: "/admin/messages" },
 ];
 
@@ -41,7 +41,7 @@ export default function SidebarAdmin() {
               key={item.label}
               href={item.href}
               className={clsx(
-                "flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                "flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors text-black",
                 {
                   "bg-blue-100 text-blue-700": isActive,
                   "hover:bg-gray-100 text-gray-700": !isActive,

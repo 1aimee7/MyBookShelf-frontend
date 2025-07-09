@@ -68,7 +68,7 @@ export default function AdminHeader() {
           {isProfileOpen && (
             <div className="absolute top-full right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-xl z-20">
               <a
-                href="/admin/profile"
+                href="/accountAdmin"
                 className="block px-4 py-2 text-sm text-black hover:bg-gray-100 transition-colors"
               >
                 Profile
