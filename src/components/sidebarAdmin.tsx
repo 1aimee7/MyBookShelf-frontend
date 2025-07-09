@@ -8,8 +8,6 @@ import {
   Users,
   Bookmark,
   MessageCircle,
-  BarChart3,
-  Settings,
   LogOut,
 } from "lucide-react";
 import clsx from "clsx";
@@ -20,8 +18,6 @@ const navItems = [
   { label: "Manage Users", icon: Users, href: "/managerUser" },
   { label: "Borrowed Books", icon: Bookmark, href: "/admin/borrowed" },
   { label: "Messages", icon: MessageCircle, href: "/admin/messages" },
-  { label: "Analytics", icon: BarChart3, href: "/admin/analytics" },
-  { label: "Settings", icon: Settings, href: "/admin/settings" },
 ];
 
 export default function SidebarAdmin() {
