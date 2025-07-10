@@ -17,7 +17,7 @@ const navItems = [
   { label: "Manage Books", icon: BookOpen, href: "/managebook" },
   { label: "Manage Users", icon: Users, href: "/managerUser" },
   { label: "Borrowed Books", icon: Bookmark, href: "/borrowedBooks" },
-  { label: "Messages", icon: MessageCircle, href: "/admin/messages" },
+  { label: "Messages", icon: MessageCircle, href: "/Messages" },
 ];
 
 export default function SidebarAdmin() {
