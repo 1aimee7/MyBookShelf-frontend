@@ -1,321 +1,257 @@
 "use client";
 
-import React, { useState, useEffect, ReactNode } from "react";
-import { useForm, FieldErrors, UseFormRegister } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Eye,
-  EyeOff,
-  Save,
-  Loader2,
-  User,
-  Mail,
-  Hash,
-  Lock,
-} from "lucide-react";
-import { Toaster, toast } from "react-hot-toast";
+import React, { useState } from "react";
+import { Edit3, Users, Shield } from "lucide-react";
 
-// ============================================================================
-//   SHARED VALIDATION & TYPES
-// ============================================================================
-const accountSchema = z
-  .object({
-    username: z.string().min(4, "Username must be at least 4 characters."),
-    email: z.string().email("Please enter a valid email address."),
-    regNo: z
-      .string()
-      .min(6, "Registration number must be at least 6 characters."),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters.")
-      .optional()
-      .or(z.literal("")),
-    confirmPassword: z.string().optional().or(z.literal("")),
-  })
-  .refine(
-    (data) => {
-      if (data.password) return data.password === data.confirmPassword;
-      return true;
-    },
-    { message: "Passwords do not match.", path: ["confirmPassword"] }
-  );
-
-type AccountFormData = z.infer<typeof accountSchema>;
-
-// ============================================================================
-//   1. REUSABLE UI COMPONENTS
-// ============================================================================
-interface SettingsCardProps {
-  title: string;
-  description: string;
-  children: ReactNode;
+interface AdminFormData {
+  adminName: string;
+  adminEmail: string;
+  adminId: string;
+  department: string;
+  permissions: string;
 }
 
-const SettingsCard: React.FC<SettingsCardProps> = ({
-  title,
-  description,
-  children,
-}) => (
-  <div className="bg-white rounded-xl shadow-sm">
-    <div className="p-6 border-b border-slate-200">
-      <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
-      <p className="mt-1 text-sm text-slate-500">{description}</p>
-    </div>
-    <div className="p-6 space-y-6">{children}</div>
-  </div>
-);
+const SimpleAccountSettings = () => {
+  const [activeTab, setActiveTab] = useState<string>("Account Setting");
 
-interface IconInputProps {
-  id: keyof AccountFormData;
-  label: string;
-  type?: string;
-  placeholder: string;
-  icon: React.ElementType;
-  register: UseFormRegister<AccountFormData>;
-  error: FieldErrors<AccountFormData>[keyof AccountFormData];
-}
+  const [formData, setFormData] = useState<AdminFormData>({
+    adminName: "",
+    adminEmail: "",
+    adminId: "",
+    department: "",
+    permissions: "",
+  });
 
-const IconInput: React.FC<IconInputProps> = ({
-  id,
-  label,
-  type = "text",
-  placeholder,
-  icon: Icon,
-  register,
-  error,
-}) => (
-  <div>
-    <label
-      htmlFor={id}
-      className="block text-sm font-medium text-slate-700 mb-1.5"
-    >
-      {label}
-    </label>
-    <div className="relative">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-        <Icon className="w-5 h-5 text-slate-400" />
-      </div>
-      <input
-        id={id}
-        type={type}
-        {...register(id)}
-        placeholder={placeholder}
-        className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-      />
-    </div>
-    {error && (
-      <p className="text-red-500 text-xs mt-1.5">{error.message as string}</p>
-    )}
-  </div>
-);
+  const tabs = [
+    "Account Setting",
+    "Login & Security",
+    "Notifications",
+    "Interface",
+  ];
 
-interface PasswordInputProps {
-  id: "password" | "confirmPassword";
-  label: string;
-  register: UseFormRegister<AccountFormData>;
-  error: FieldErrors<AccountFormData>[keyof AccountFormData];
-}
+  const handleInputChange = (
+    field: keyof AdminFormData,
+    value: string
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
-const PasswordInput: React.FC<PasswordInputProps> = ({
-  id,
-  label,
-  register,
-  error,
-}) => {
-  const [showPassword, setShowPassword] = useState(false);
+  const handleUpdateProfile = () => {
+    console.log("Profile updated:", formData);
+    // TODO: connect to backend or update local state
+  };
+
+  const handleReset = () => {
+    setFormData({
+      adminName: "",
+      adminEmail: "",
+      adminId: "",
+      department: "",
+      permissions: "",
+    });
+  };
+
   return (
-    <div>
-      <label
-        htmlFor={id}
-        className="block text-sm font-medium text-slate-700 mb-1.5"
-      >
-        {label}
-      </label>
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Lock className="w-5 h-5 text-slate-400" />
-        </div>
-        <input
-          id={id}
-          type={showPassword ? "text" : "password"}
-          {...register(id)}
-          placeholder="••••••••"
-          className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-        />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-500 hover:text-blue-600"
-          aria-label={showPassword ? "Hide password" : "Show password"}
-        >
-          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-        </button>
+    <div className="max-w-6xl mx-auto p-6 bg-white min-h-screen">
+      {/* Tab Navigation */}
+      <div className="flex space-x-8 mb-8">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`pb-2 px-1 border-b-2 transition-colors ${
+              activeTab === tab
+                ? "border-orange-500 text-orange-500 font-medium"
+                : "border-transparent text-gray-600 hover:text-gray-800"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
-      {error && (
-        <p className="text-red-500 text-xs mt-1.5">{error.message as string}</p>
+
+      {/* Content */}
+      {activeTab === "Account Setting" && (
+        <div className="flex gap-12">
+          {/* Left - Profile Info */}
+          <div className="flex-shrink-0">
+            <div className="text-center">
+              <h3 className="text-gray-700 font-medium mb-4">
+                Admin Profile Picture
+              </h3>
+              <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mx-auto mb-4">
+                <img
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
+                  alt="Admin Profile"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <button className="text-blue-600 hover:text-blue-800 underline text-sm">
+                Upload New photo
+              </button>
+            </div>
+
+            {/* Admin Stats Cards */}
+            <div className="mt-8 space-y-4">
+              <div className="bg-orange-500 text-white rounded-lg p-4 w-40">
+                <div className="flex items-center gap-2 mb-1">
+                  <Users className="w-5 h-5" />
+                  <span className="text-2xl font-bold">245</span>
+                </div>
+                <div className="text-sm opacity-90">Users Managed</div>
+              </div>
+
+              <div className="bg-purple-600 text-white rounded-lg p-4 w-40">
+                <div className="flex items-center gap-2 mb-1">
+                  <Shield className="w-5 h-5" />
+                  <span className="text-2xl font-bold">12</span>
+                </div>
+                <div className="text-sm opacity-90">Admin Actions</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right - Form */}
+          <div className="flex-1">
+            <div className="flex justify-end mb-6">
+              <Edit3 className="w-5 h-5 text-gray-400" />
+            </div>
+
+            <div className="space-y-6">
+              {/* Row 1 */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Admin Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.adminName}
+                    onChange={(e) =>
+                      handleInputChange("adminName", e.target.value)
+                    }
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter admin name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Admin Email
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.adminEmail}
+                    onChange={(e) =>
+                      handleInputChange("adminEmail", e.target.value)
+                    }
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter admin email"
+                  />
+                </div>
+              </div>
+
+              {/* Row 2 */}
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Admin ID
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.adminId}
+                    onChange={(e) =>
+                      handleInputChange("adminId", e.target.value)
+                    }
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Enter admin ID"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 font-medium mb-2">
+                    Department
+                  </label>
+                  <select
+                    value={formData.department}
+                    onChange={(e) =>
+                      handleInputChange("department", e.target.value)
+                    }
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select department</option>
+                    <option value="IT">IT Department</option>
+                    <option value="HR">HR Department</option>
+                    <option value="Finance">Finance Department</option>
+                    <option value="Academic">Academic Department</option>
+                    <option value="Operations">Operations Department</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Permissions */}
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">
+                  Admin Permissions
+                </label>
+                <textarea
+                  value={formData.permissions}
+                  onChange={(e) =>
+                    handleInputChange("permissions", e.target.value)
+                  }
+                  rows={4}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  placeholder="Describe admin permissions and access levels..."
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-4 pt-4">
+                <button
+                  onClick={handleUpdateProfile}
+                  className="px-8 py-3 bg-orange-500 text-white rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                >
+                  Update Admin Profile
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="px-8 py-3 text-gray-600 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Other Tabs Content */}
+      {activeTab === "Login & Security" && (
+        <div className="text-center py-20">
+          <h3 className="text-xl text-gray-600">
+            Admin security settings and access controls
+          </h3>
+        </div>
+      )}
+
+      {activeTab === "Notifications" && (
+        <div className="text-center py-20">
+          <h3 className="text-xl text-gray-600">
+            Admin notification preferences for system alerts
+          </h3>
+        </div>
+      )}
+
+      {activeTab === "Interface" && (
+        <div className="text-center py-20">
+          <h3 className="text-xl text-gray-600">
+            Admin dashboard interface customization
+          </h3>
+        </div>
       )}
     </div>
   );
 };
 
-// ============================================================================
-//   2. MAIN ACCOUNT SETTINGS CONTENT
-// ============================================================================
-const ModernAdminSettingsContent = () => {
-  const [isDataLoading, setIsDataLoading] = useState(true);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-  } = useForm<AccountFormData>({
-    resolver: zodResolver(accountSchema),
-  });
-
-  useEffect(() => {
-    const fetchAdminData = async () => {
-      const mockAdminData = {
-        username: "admin_01",
-        email: "admin@example.com",
-        regNo: "STF11223",
-      };
-      await new Promise((resolve) => setTimeout(resolve, 1200));
-      reset({ ...mockAdminData, password: "", confirmPassword: "" });
-      setIsDataLoading(false);
-    };
-    fetchAdminData();
-  }, [reset]);
-
-  const onSubmit = async (data: AccountFormData) => {
-    const updateData: Partial<AccountFormData> = {
-      username: data.username,
-      email: data.email,
-      regNo: data.regNo,
-    };
-    if (data.password) updateData.password = data.password;
-    try {
-      console.log("Submitting to backend:", updateData);
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      toast.success("Profile updated successfully!");
-      reset({ ...data, password: "", confirmPassword: "" });
-    } catch (error) {
-      console.error("Update failed:", error);
-      toast.error("Failed to update profile. Please try again.");
-    }
-  };
-
-  if (isDataLoading) {
-    return (
-      <div className="flex justify-center items-center h-full w-full p-10">
-        <div className="flex flex-col items-center">
-          <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-          <p className="mt-4 text-lg text-slate-600">Loading Your Settings...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-4 sm:p-6 md:p-8 w-full max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-800">Account Settings</h1>
-        <p className="mt-1 text-slate-500">
-          Manage your profile, and password settings.
-        </p>
-      </div>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-        <SettingsCard
-          title="Profile Information"
-          description="Update your personal details here."
-        >
-          <IconInput
-            id="username"
-            label="Username"
-            placeholder="e.g., admin_01"
-            icon={User}
-            register={register}
-            error={errors.username}
-          />
-          <IconInput
-            id="email"
-            label="Email Address"
-            type="email"
-            placeholder="you@example.com"
-            icon={Mail}
-            register={register}
-            error={errors.email}
-          />
-          <IconInput
-            id="regNo"
-            label="Registration Number"
-            placeholder="e.g., STF11223"
-            icon={Hash}
-            register={register}
-            error={errors.regNo}
-          />
-        </SettingsCard>
-
-        <SettingsCard
-          title="Security"
-          description="Leave fields blank to keep your current password."
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <PasswordInput
-              id="password"
-              label="New Password"
-              register={register}
-              error={errors.password}
-            />
-            <PasswordInput
-              id="confirmPassword"
-              label="Confirm New Password"
-              register={register}
-              error={errors.confirmPassword}
-            />
-          </div>
-        </SettingsCard>
-
-        <div className="pt-2 flex justify-end">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 disabled:bg-blue-400 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="mr-2 h-5 w-5" />
-                Save Changes
-              </>
-            )}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-};
-
-// ============================================================================
-//   3. FINAL EXPORT WITH A VISIBLE, SCROLLABLE WRAPPER
-// ============================================================================
-export default function VisibleScrollableSettingsPage() {
-  return (
-    <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          style: { borderRadius: "8px", background: "#333", color: "#fff" },
-        }}
-      />
-      <div className="w-full h-[700px] overflow-y-auto bg-slate-50 border-2 border-dashed border-red-400 rounded-lg">
-        <ModernAdminSettingsContent />
-      </div>
-    </>
-  );
-}
+export default SimpleAccountSettings;

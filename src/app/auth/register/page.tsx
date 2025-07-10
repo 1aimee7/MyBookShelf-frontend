@@ -112,13 +112,13 @@ export default function Register() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              College Email ID
+              Email Address
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="username@collegename.ac.za"
+              placeholder="username@gmail.com"
               required
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
@@ -134,7 +134,7 @@ export default function Register() {
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
             >
               <option value="user">User</option>
-              <option value="admin">Admin</option>
+             
             </select>
           </div>
 
