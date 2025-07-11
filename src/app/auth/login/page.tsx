@@ -13,7 +13,7 @@ export default function Login() {
     console.log("Form submitted", { email, password });
     const response = { success: true }; // Mock response
     if (response.success) {
-      router.push("/auth/OTP");
+      router.push("/dashboard");
     } else {
       alert("Login failed");
     }
