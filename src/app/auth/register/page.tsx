@@ -36,6 +36,7 @@ export default function Register() {
     const response = { success: true };
 
     if (response.success) {
+      console.log("Redirecting to OTP page...");
       router.push("/auth/OTP");
     } else {
       alert("Registration failed");
@@ -134,7 +135,6 @@ export default function Register() {
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 bg-white"
             >
               <option value="user">User</option>
-             
             </select>
           </div>
 
