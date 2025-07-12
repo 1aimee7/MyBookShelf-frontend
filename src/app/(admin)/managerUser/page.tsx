@@ -10,8 +10,21 @@ import {
   ChevronDown,
 } from "lucide-react";
 
+// ✅ 1. Define the User type
+type User = {
+  id: string;
+  username: string;
+  email: string;
+  regNo: string;
+  role: string;
+  status: "Active" | "Suspended";
+  joinedDate: string;
+  borrowedBooks: number;
+  readingHistory: string[];
+};
 
-const managerUser = [
+// ✅ 2. Type the initial data
+const managerUser: User[] = [
   {
     id: "1",
     username: "john_doe",
@@ -48,28 +61,30 @@ const managerUser = [
 ];
 
 export default function ManageUsers() {
-  const [users, setUsers] = useState(managerUser);
+  const [users, setUsers] = useState<User[]>(managerUser);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+
   const usersPerPage = 10;
 
-  // Filter and search logic
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.regNo.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesFilter =
       filter === "All" ||
       (filter === "Active" && user.status === "Active") ||
       (filter === "Suspended" && user.status === "Suspended") ||
       (filter === "Recently Joined" &&
         new Date(user.joinedDate) > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000));
+
     return matchesSearch && matchesFilter;
   });
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
   const paginatedUsers = filteredUsers.slice(
     (currentPage - 1) * usersPerPage,
@@ -77,8 +92,8 @@ export default function ManageUsers() {
   );
 
   const handleBlockUnblock = (id: string) => {
-    setUsers(
-      users.map((user) =>
+    setUsers((prev) =>
+      prev.map((user) =>
         user.id === id
           ? { ...user, status: user.status === "Active" ? "Suspended" : "Active" }
           : user
@@ -88,19 +103,39 @@ export default function ManageUsers() {
 
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this user?")) {
-      setUsers(users.filter((user) => user.id !== id));
+      setUsers((prev) => prev.filter((user) => user.id !== id));
     }
   };
 
-  const handleViewDetails = (user: typeof managerUser[0]) => {
+  const handleViewDetails = (user: User) => {
     alert(
       `User Details:\nUsername: ${user.username}\nEmail: ${user.email}\nBorrowed Books: ${user.borrowedBooks}\nReading History: ${user.readingHistory.join(", ")}`
     );
   };
 
+  // ✅ 3. Type the function properly (no more `any`)
+  const handleAddUser = (newUser: Omit<User, "id">) => {
+    setUsers((prev) => [
+      ...prev,
+      {
+        ...newUser,
+        id: Date.now().toString(),
+      },
+    ]);
+  };
+
   return (
     <div className="flex flex-col p-6 h-full text-black">
-      <h2 className="text-2xl font-semibold mb-6">Manage Users</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-semibold">Manage Users</h2>
+        <button
+          onClick={() => setShowModal(true)}
+          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+        >
+          + Add User
+        </button>
+      </div>
+
       <div className="bg-white p-6 rounded-lg shadow flex flex-col flex-1">
         {/* Search and Filter */}
         <div className="flex flex-col md:flex-row justify-between mb-6 space-y-4 md:space-y-0 md:space-x-4">
@@ -135,7 +170,7 @@ export default function ManageUsers() {
           </div>
         </div>
 
-        {/* Users Table */}
+        {/* Table */}
         <div className="overflow-x-auto flex-1 min-h-0">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -230,6 +265,73 @@ export default function ManageUsers() {
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-4">Add New User</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const formData = new FormData(form);
+                const newUser: Omit<User, "id"> = {
+                  username: formData.get("username") as string,
+                  email: formData.get("email") as string,
+                  regNo: formData.get("regNo") as string,
+                  role: formData.get("role") as string,
+                  status: "Active",
+                  joinedDate: new Date().toISOString().split("T")[0],
+                  borrowedBooks: 0,
+                  readingHistory: [],
+                };
+                handleAddUser(newUser);
+                setShowModal(false);
+              }}
+              className="space-y-3"
+            >
+              <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                required
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                required
+                className="w-full p-2 border rounded"
+              />
+              <input
+                type="text"
+                name="regNo"
+                placeholder="Reg No."
+                required
+                className="w-full p-2 border rounded"
+              />
+              <select name="role" className="w-full p-2 border rounded" required>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 text-gray-600 bg-gray-200 rounded"
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 bg-orange-500 text-white rounded">
+                  Add User
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

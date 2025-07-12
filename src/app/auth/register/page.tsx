@@ -6,7 +6,6 @@ import { Eye, EyeOff } from "lucide-react";
 
 export default function Register() {
   const [username, setUsername] = useState("");
-  const [regNo, setRegNo] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("user");
   const [password, setPassword] = useState("");
@@ -26,7 +25,6 @@ export default function Register() {
 
     console.log("Form submitted", {
       username,
-      regNo,
       email,
       role,
       password,
@@ -92,20 +90,6 @@ export default function Register() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Choose a username"
-              required
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Reg No.
-            </label>
-            <input
-              type="text"
-              value={regNo}
-              onChange={(e) => setRegNo(e.target.value)}
-              placeholder="College Reg. No."
               required
               className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
             />
