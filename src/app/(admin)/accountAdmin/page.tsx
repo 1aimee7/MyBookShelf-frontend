@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Edit3, Users, Shield } from "lucide-react";
+import Image from "next/image";
 
 interface AdminFormData {
   adminName: string;
@@ -41,7 +42,6 @@ const SimpleAccountSettings = () => {
 
   const handleUpdateProfile = () => {
     console.log("Profile updated:", formData);
-    // TODO: connect to backend or update local state
   };
 
   const handleReset = () => {
@@ -82,11 +82,13 @@ const SimpleAccountSettings = () => {
               <h3 className="text-gray-700 font-medium mb-4">
                 Admin Profile Picture
               </h3>
-              <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mx-auto mb-4">
-                <img
+              <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 mx-auto mb-4 relative">
+                <Image
                   src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"
                   alt="Admin Profile"
-                  className="w-full h-full object-cover"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-full"
                 />
               </div>
               <button className="text-blue-600 hover:text-blue-800 underline text-sm">
