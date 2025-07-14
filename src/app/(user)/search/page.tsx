@@ -12,12 +12,10 @@ export default function SearchPage() {
   const [favorites, setFavorites] = useState<Set<number>>(new Set());
   const [hasMounted, setHasMounted] = useState(false);
 
-  // Set mounted flag on client only (prevents hydration mismatch)
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
-  // Load favorites from localStorage
   useEffect(() => {
     const storedFavorites = localStorage.getItem("favoriteBooks");
     if (storedFavorites) {
@@ -25,7 +23,6 @@ export default function SearchPage() {
     }
   }, []);
 
-  // Save favorites to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("favoriteBooks", JSON.stringify(Array.from(favorites)));
   }, [favorites]);
@@ -88,16 +85,12 @@ export default function SearchPage() {
               <th className="text-left px-4 py-3 text-gray-700 text-sm font-medium">Title</th>
               <th className="text-left px-4 py-3 text-gray-700 text-sm font-medium">Ratings</th>
               <th className="text-left px-4 py-3 text-gray-700 text-sm font-medium">Category</th>
-              <th className="text-left px-4 py-3 text-gray-700 text-sm font-medium">Availability</th>
-              <th className="text-left px-4 py-3 text-gray-700 text-sm font-medium">Actions</th>
+              <th className="text-left px-4 py-3 text-gray-700 text-sm font-medium">Favorite / Preview</th>
             </tr>
           </thead>
           <tbody>
             {filteredBooks.map((book) => {
               const categoryList: string[] = book.category ?? [];
-              const availability = book.availability ?? "Unknown";
-              const status = book.status ?? "Unknown";
-              const isInShelf = status === "In-Shelf";
 
               return (
                 <tr key={book.id} className="border-b border-gray-100 hover:bg-gray-50">
@@ -118,17 +111,8 @@ export default function SearchPage() {
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-700">{book.rating}/5</td>
                   <td className="px-4 py-3 text-sm text-gray-700">{categoryList.join(", ")}</td>
-                  <td className="px-4 py-3 text-sm">{availability}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center space-x-3">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          isInShelf ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                        }`}
-                      >
-                        {status}
-                      </span>
-
                       {hasMounted ? (
                         <button
                           className="text-gray-400 hover:text-red-500"
@@ -142,7 +126,6 @@ export default function SearchPage() {
                       ) : (
                         <span aria-hidden="true">🤍</span>
                       )}
-
                       <Link
                         href={`/preview/${book.id}`}
                         className="text-purple-600 hover:text-purple-800 text-sm font-medium"
@@ -166,4 +149,3 @@ export default function SearchPage() {
     </div>
   );
 }
-

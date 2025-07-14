@@ -10,7 +10,6 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-// ✅ 1. Define the User type
 type User = {
   id: string;
   username: string;
@@ -23,7 +22,6 @@ type User = {
   readingHistory: string[];
 };
 
-// ✅ 2. Type the initial data
 const managerUser: User[] = [
   {
     id: "1",
@@ -113,7 +111,6 @@ export default function ManageUsers() {
     );
   };
 
-  // ✅ 3. Type the function properly (no more `any`)
   const handleAddUser = (newUser: Omit<User, "id">) => {
     setUsers((prev) => [
       ...prev,
@@ -137,7 +134,6 @@ export default function ManageUsers() {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow flex flex-col flex-1">
-        {/* Search and Filter */}
         <div className="flex flex-col md:flex-row justify-between mb-6 space-y-4 md:space-y-0 md:space-x-4">
           <div className="relative w-full md:w-1/3">
             <Search
@@ -170,7 +166,6 @@ export default function ManageUsers() {
           </div>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto flex-1 min-h-0">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -242,7 +237,6 @@ export default function ManageUsers() {
           </table>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-between items-center mt-4">
             <button
@@ -266,7 +260,7 @@ export default function ManageUsers() {
         )}
       </div>
 
-      {/* Modal */}
+      {/* ✅ UPDATED Modal (regNo & role removed) */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -279,8 +273,8 @@ export default function ManageUsers() {
                 const newUser: Omit<User, "id"> = {
                   username: formData.get("username") as string,
                   email: formData.get("email") as string,
-                  regNo: formData.get("regNo") as string,
-                  role: formData.get("role") as string,
+                  regNo: "AUTO", // default/fake regNo
+                  role: "user", // default role
                   status: "Active",
                   joinedDate: new Date().toISOString().split("T")[0],
                   borrowedBooks: 0,
@@ -305,17 +299,6 @@ export default function ManageUsers() {
                 required
                 className="w-full p-2 border rounded"
               />
-              <input
-                type="text"
-                name="regNo"
-                placeholder="Reg No."
-                required
-                className="w-full p-2 border rounded"
-              />
-              <select name="role" className="w-full p-2 border rounded" required>
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
