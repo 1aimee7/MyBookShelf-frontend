@@ -160,6 +160,8 @@ export default function Contribute() {
                         <Image
                           src={book.coverImage}
                           alt={book.title}
+                          width={80}
+                          height={112}
                           className="w-20 h-28 rounded object-cover shadow-md"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
@@ -350,6 +352,8 @@ export default function Contribute() {
                       <Image
                         src={book.coverImage}
                         alt={book.title}
+                        width={64}
+                        height={80}
                         className="w-16 h-20 rounded object-cover"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, FC } from "react";
+import React, { useState, FC, useRef } from "react";
 import {
   PlusSquare,
   BookOpen,
@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-// NavItem and StatCard interfaces and components
 interface StatCardProps {
   icon: LucideIcon;
   value: string | number;
@@ -43,6 +42,7 @@ export default function LibraryAccountPage() {
   const [user, setUser] = useState(initialUser);
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState("Account Setting");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleUpdateProfile = () => {
     setIsEditing(false);
@@ -52,6 +52,17 @@ export default function LibraryAccountPage() {
   const handleReset = () => {
     setUser(initialUser);
     setIsEditing(false);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setUser((prev) => ({
+        ...prev,
+        profileImage: imageUrl,
+      }));
+    }
   };
 
   const tabs = ["Account Setting", "Login & Security", "Notifications", "Interface"];
@@ -97,12 +108,19 @@ export default function LibraryAccountPage() {
                       className="rounded-full object-cover"
                     />
                   </div>
-                  <a
-                    href="#"
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
                     className="text-xs text-slate-500 underline mt-2 block hover:text-[#fd7e5a]"
                   >
                     Upload New photo
-                  </a>
+                  </button>
 
                   <div className="flex space-x-4 mt-8">
                     <StatCard
@@ -139,9 +157,7 @@ export default function LibraryAccountPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                       {[
                         { label: "Full name", field: "name", type: "text" },
-                        { label: "College Email ID", field: "email", type: "email" },
-                        { label: "Register Number", field: "registerNumber", type: "text" },
-                        { label: "Phone Number", field: "phone", type: "tel" },
+                        { label: "Email Address", field: "email", type: "email" },
                       ].map(({ label, field, type }) => (
                         <div key={field}>
                           <label className="block text-sm font-medium text-slate-600 mb-1">
