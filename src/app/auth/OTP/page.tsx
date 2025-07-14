@@ -35,7 +35,7 @@ export default function OTP() {
 
     try {
       const response = await axios.post(
-        "https://mybooklibrary-5awp.onrender.com/api/v1/auth/verify-otp",
+        "https://mybooklibrary-5awp.onrender.com/api/auth/otp/verify",
         {
           email,
           otp: enteredOtp,
@@ -56,7 +56,7 @@ export default function OTP() {
   const handleResend = async () => {
     try {
       const response = await axios.post(
-        "https://mybooklibrary-5awp.onrender.com/api/v1/auth/send-otp",
+        "https://mybooklibrary-5awp.onrender.com/api/auth/otp/send",
         {
           email,
         }
