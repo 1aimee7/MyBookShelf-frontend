@@ -12,6 +12,7 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -23,27 +24,44 @@ export default function Register() {
       return;
     }
 
-    console.log("Form submitted", {
-      username,
-      email,
-      role,
-      password,
-    });
+    setIsLoading(true);
 
-    // Simulate successful response
-    const response = { success: true };
+    try {
+      const res = await fetch("https://mybooklibrary-5awp.onrender.com/api/v1/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          role,
+          password,
+        }),
+      });
 
-    if (response.success) {
-      console.log("Redirecting to OTP page...");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message || "Registration failed");
+      }
+
+      alert("Registration successful!");
       router.push("/auth/OTP");
-    } else {
-      alert("Registration failed");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unknown error occurred during registration.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 -z-10" style={{ background: "white" }}>
+      <div className="absolute inset-0 -z-10 bg-white">
         <svg
           className="w-full h-full"
           viewBox="0 0 1920 1078"
@@ -82,9 +100,7 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Username
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
             <input
               type="text"
               value={username}
@@ -96,9 +112,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email Address
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
             <input
               type="email"
               value={email}
@@ -110,9 +124,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Role
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
@@ -123,9 +135,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -146,9 +156,7 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}
@@ -160,34 +168,49 @@ export default function Register() {
               />
               <button
                 type="button"
-                onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
               >
-                {showConfirmPassword ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
+            disabled={isLoading}
+            className={`w-full flex justify-center items-center gap-2 bg-orange-500 text-white font-semibold py-2 px-4 rounded transition ${
+              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-600"
+            }`}
           >
-            Register
+            {isLoading && (
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+            )}
+            {isLoading ? "Registering..." : "Register"}
           </button>
 
           <div className="mt-4 flex justify-between text-gray-600 text-xs">
             <span>
               Back to{" "}
-              <a
-                href="/auth/login"
-                className="text-blue-600 hover:underline text-xs"
-              >
+              <a href="/auth/login" className="text-blue-600 hover:underline text-xs">
                 Login
               </a>
             </span>
