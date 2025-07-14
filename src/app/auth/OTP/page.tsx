@@ -2,11 +2,14 @@
 
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios"; // ✅ Added
 
 export default function OTP() {
- const [otp, setOtp] = useState(['', '', '', '', '', '']);
- const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
+
+  const email = "user@example.com"; // Replace this with dynamic value if needed
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return;
@@ -21,20 +24,48 @@ export default function OTP() {
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("OTP submitted:", otp.join(''));
-    // Simulate API call to verify OTP
-    const response = { success: true }; // Mock response
-    if (response.success) {
-      router.push("/auth/verified"); // Redirect to Verified page
-    } else {
-      alert("Verification failed");
+    const enteredOtp = otp.join("");
+
+    try {
+      const response = await axios.post(
+        "https://mybooklibrary-5awp.onrender.com/api/v1/auth/verify-otp",
+        {
+          email,
+          otp: enteredOtp,
+        }
+      );
+
+      if (response.data.success) {
+        router.push("/auth/verified");
+      } else {
+        alert("Verification failed");
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
+      alert("An error occurred during verification.");
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      const response = await axios.post(
+        "https://mybooklibrary-5awp.onrender.com/api/v1/auth/send-otp",
+        {
+          email,
+        }
+      );
+      console.log("OTP Resent:", response.data);
+      alert("OTP resent to your email.");
+    } catch (error) {
+      console.error("Resend OTP error:", error);
+      alert("Failed to resend OTP.");
     }
   };
 
@@ -48,7 +79,14 @@ export default function OTP() {
           xmlns="http://www.w3.org/2000/svg"
         >
           <defs>
-            <linearGradient id="paint0_linear_7_126" x1="533.5" y1="-250.046" x2="930.38" y2="1569.83" gradientUnits="userSpaceOnUse">
+            <linearGradient
+              id="paint0_linear_7_126"
+              x1="533.5"
+              y1="-250.046"
+              x2="930.38"
+              y2="1569.83"
+              gradientUnits="userSpaceOnUse"
+            >
               <stop stopColor="#FA7C54" />
               <stop offset="1" stopColor="#EC2C5A" />
             </linearGradient>
@@ -87,7 +125,7 @@ export default function OTP() {
                 inputMode="numeric"
                 maxLength={1}
                 value={digit}
-                onChange={(e) => handleChange(index, e.target.value.replace(/\D/g, ''))}
+                onChange={(e) => handleChange(index, e.target.value.replace(/\D/g, ""))}
                 onKeyDown={(e) => handleKeyDown(index, e)}
                 className="w-12 h-12 text-center text-lg font-semibold border-b-2 border-gray-400 focus:border-orange-500 focus:outline-none bg-transparent"
               />
@@ -105,7 +143,7 @@ export default function OTP() {
         <div className="flex justify-between items-center mt-6">
           <span className="text-gray-600 text-xs">
             Not yet received?{" "}
-            <button className="text-blue-600 hover:underline text-xs">
+            <button onClick={handleResend} className="text-blue-600 hover:underline text-xs">
               Resend
             </button>
           </span>
