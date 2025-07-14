@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import axios from "axios";
 
 export default function Register() {
   const [username, setUsername] = useState("");
@@ -27,22 +28,16 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("https://mybooklibrary-5awp.onrender.com/api/v1/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username,
-          email,
-          role,
-          password,
-        }),
+      const res = await axios.post("https://mybooklibrary-5awp.onrender.com/api/auth/register", {
+        username,
+        email,
+        role,
+        password,
       });
 
-      const data = await res.json();
+      const data = res.data;
 
-      if (!res.ok) {
+      if (!data.success) {
         throw new Error(data?.message || "Registration failed");
       }
 
