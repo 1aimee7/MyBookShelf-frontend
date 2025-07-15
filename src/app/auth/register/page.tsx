@@ -20,6 +20,11 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!username.trim() || !email.trim() || !password.trim()) {
+      alert("All fields are required.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       alert("Passwords do not match.");
       return;
@@ -28,12 +33,15 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      const res = await axios.post("https://mybooklibrary-5awp.onrender.com/api/auth/register", {
-        username,
-        email,
-        role,
-        password,
-      });
+      const res = await axios.post(
+        "https://mybooklibrary-5awp.onrender.com/api/auth/register",
+        {
+          username: username.trim(),
+          email: email.trim(),
+          role,
+          password: password.trim(),
+        }
+      );
 
       const data = res.data;
 
@@ -44,7 +52,9 @@ export default function Register() {
       alert("Registration successful!");
       router.push("/auth/OTP");
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else if (error instanceof Error) {
         alert(error.message);
       } else {
         alert("An unknown error occurred during registration.");
@@ -209,7 +219,7 @@ export default function Register() {
                 Login
               </a>
             </span>
-            <a href="#" className="text-blue-600 hover:underline text-xs">
+            <a href="/guest" className="text-blue-600 hover:underline text-xs">
               Use as Guest
             </a>
           </div>
