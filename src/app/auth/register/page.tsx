@@ -44,13 +44,12 @@ export default function Register() {
 
       const data = res.data;
 
-      // Assuming the backend sends a success flag or similar
       if (res.status !== 200 && res.status !== 201) {
-         throw new Error(data?.message || "Registration failed");
+        throw new Error(data?.message || "Registration failed");
       }
 
       alert("Registration successful! Please check your email for an OTP.");
-      router.push("/auth/OTP"); // Or a page that says to check email
+      router.push("/auth/OTP");
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response?.data?.message) {
         alert(error.response.data.message);
