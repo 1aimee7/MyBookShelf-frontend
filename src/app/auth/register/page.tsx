@@ -35,24 +35,39 @@ export default function Register() {
       const res = await axios.post(
         "https://mybooklibrary-5awp.onrender.com/api/auth/register",
         {
-          userName: username.trim(),
+          userName: username.trim(), // ✅ backend expects userName, not username
           email: email.trim(),
           password: password.trim(),
           confirmPassword: confirmPassword.trim(),
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 
-      const data = res.data;
+      if (res.status === 200 || res.status === 201) {
+        const token = res.data.token;
 
-      if (res.status !== 200 && res.status !== 201) {
-        throw new Error(data?.message || "Registration failed");
+        // ✅ Store token and email for OTP flow
+        localStorage.setItem("authToken", token);
+        localStorage.setItem("email", email.trim());
+
+        alert("Registration successful! OTP has been sent to your email.");
+        router.push("/auth/send-otp"); // ✅ redirect to OTP page
+      } else {
+        throw new Error("Registration failed");
       }
-
-      alert("Registration successful! Please check your email for an OTP.");
-      router.push("/auth/OTP");
     } catch (error: unknown) {
-      if (axios.isAxiosError(error) && error.response?.data?.message) {
-        alert(error.response.data.message);
+      if (axios.isAxiosError(error)) {
+        if (typeof error.response?.data === "string") {
+          alert(error.response.data);
+        } else if (error.response?.data?.message) {
+          alert(error.response.data.message);
+        } else {
+          alert("Registration failed due to unknown error");
+        }
       } else if (error instanceof Error) {
         alert(error.message);
       } else {
@@ -104,7 +119,9 @@ export default function Register() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Username
+            </label>
             <input
               type="text"
               value={username}
@@ -116,7 +133,9 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address
+            </label>
             <input
               type="email"
               value={email}
@@ -128,7 +147,9 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -149,7 +170,9 @@ export default function Register() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm Password
+            </label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? "text" : "password"}

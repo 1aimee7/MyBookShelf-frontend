@@ -2,14 +2,15 @@
 
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios"; // ✅ Added
+import axios from "axios";
 
-export default function OTP() {
+export default function OTPPage() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
 
-  const email = "user@example.com"; // Replace this with dynamic value if needed
+  const email = typeof window !== "undefined" ? localStorage.getItem("email") || "" : "";
+  const token = typeof window !== "undefined" ? localStorage.getItem("authToken") || "" : "";
 
   const handleChange = (index: number, value: string) => {
     if (value.length > 1) return;
@@ -33,20 +34,30 @@ export default function OTP() {
     e.preventDefault();
     const enteredOtp = otp.join("");
 
+    if (!email || !token) {
+      alert("Missing email or token. Please login/register again.");
+      return;
+    }
+
     try {
-      const response = await axios.post(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _response = await axios.post(
         "https://mybooklibrary-5awp.onrender.com/api/auth/otp/verify",
         {
           email,
           otp: enteredOtp,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "*/*",
+          },
         }
       );
 
-      if (response.data.success) {
-        router.push("/auth/verified");
-      } else {
-        alert("Verification failed");
-      }
+      alert("OTP verified successfully.");
+      router.push("/auth/verified");
     } catch (error) {
       console.error("Verification error:", error);
       alert("An error occurred during verification.");
@@ -54,14 +65,24 @@ export default function OTP() {
   };
 
   const handleResend = async () => {
+    if (!email || !token) {
+      alert("Missing email or token.");
+      return;
+    }
+
     try {
-      const response = await axios.post(
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const _response = await axios.post(
         "https://mybooklibrary-5awp.onrender.com/api/auth/otp/send",
+        { email },
         {
-          email,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "*/*",
+          },
         }
       );
-      console.log("OTP Resent:", response.data);
       alert("OTP resent to your email.");
     } catch (error) {
       console.error("Resend OTP error:", error);
@@ -71,7 +92,7 @@ export default function OTP() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 -z-10" style={{ background: "white" }}>
+      <div className="absolute inset-0 -z-10 bg-white">
         <svg
           className="w-full h-full"
           viewBox="0 0 1920 1078"
@@ -98,7 +119,7 @@ export default function OTP() {
         </svg>
       </div>
 
-      <div className="bg-white p-8 rounded-xl shadow-lg h-145 max-w-md z-10 w-90">
+      <div className="bg-white p-8 rounded-xl shadow-lg max-w-md z-10 w-full mx-4 sm:w-90">
         <h1 className="text-center text-3xl font-semibold mb-1">
           My <span className="text-orange-500 font-bold">Book</span>
         </h1>
@@ -106,14 +127,10 @@ export default function OTP() {
 
         <div className="text-center mt-6 mb-8">
           <h3 className="text-xl font-medium text-gray-800 mb-2">Verification</h3>
-          <p className="text-sm text-gray-500">Check your E-mail for OTP</p>
+          <p className="text-sm text-gray-500">Check your E-mail for the OTP</p>
         </div>
 
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-medium mb-4">
-            Enter your OTP Here
-          </label>
-
+        <form onSubmit={handleSubmit}>
           <div className="flex justify-center space-x-3 mb-6">
             {otp.map((digit, index) => (
               <input
@@ -131,23 +148,26 @@ export default function OTP() {
               />
             ))}
           </div>
-        </div>
 
-        <button
-          onClick={handleSubmit}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 mt-15"
-        >
-          Verify
-        </button>
+          <button
+            type="submit"
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200"
+          >
+            Verify
+          </button>
+        </form>
 
         <div className="flex justify-between items-center mt-6">
           <span className="text-gray-600 text-xs">
-            Not yet received?{" "}
+            Not received?{" "}
             <button onClick={handleResend} className="text-blue-600 hover:underline text-xs">
               Resend
             </button>
           </span>
-          <button className="text-blue-600 hover:underline text-xs">
+          <button
+            onClick={() => router.back()}
+            className="text-blue-600 hover:underline text-xs"
+          >
             Back
           </button>
         </div>

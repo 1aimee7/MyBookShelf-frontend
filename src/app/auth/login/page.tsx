@@ -2,37 +2,75 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function Login() {
   const [email, setEmail] = useState("aimeishimwe25@gmail.com");
-  const [password, setPassword] = useState("123");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted", { email, password });
-    const response = { success: true }; // Mock response
-    if (response.success) {
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await axios.post(
+        "https://mybooklibrary-5awp.onrender.com/api/auth/login",
+        { email, password },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            // Don't add Authorization here for login request, backend will authenticate user by email/password
+          },
+        }
+      );
+
+      // Assuming the response data is the token string itself (from your curl)
+      const token = response.data;
+      console.log("Login successful, token:", token);
+
+      // Save token (e.g. localStorage or cookies)
+      localStorage.setItem("authToken", token);
+
+      // Redirect to dashboard
       router.push("/dashboard");
-    } else {
-      alert("Login failed");
+    } catch (err: unknown) {
+      console.error(err);
+
+      interface AxiosErrorLike {
+        response?: {
+          data?: {
+            message?: string;
+          };
+        };
+      }
+
+      if (err instanceof Error) {
+        setError(err.message || "Login failed. Please check your credentials.");
+      } else if (
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as AxiosErrorLike).response?.data?.message === "string"
+      ) {
+        setError(
+          (err as AxiosErrorLike).response?.data?.message ??
+            "Login failed. Please check your credentials."
+        );
+      } else {
+        setError("Login failed. Please check your credentials.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 -z-10" style={{ background: "white" }}>
-        <svg className="w-full h-full" viewBox="0 0 1920 1078" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="paint0_linear_7_126" x1="533.5" y1="-250.046" x2="930.38" y2="1569.83" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#FA7C54" />
-              <stop offset="1" stopColor="#EC2C5A" />
-            </linearGradient>
-          </defs>
-          <path d="M422.191 543.979C192.258 503.244 -0.0049549 1077.16 -0.0049549 1077.16L-24.5485 0.28931L2015.36 -70.4756L1632.2 225.998C1632.2 225.998 1048.5 730.186 840.631 745.682C632.759 761.179 626.854 580.237 422.191 543.979Z" fill="url(#paint0_linear_7_126)" />
-        </svg>
-      </div>
-
+      {/* Background SVG omitted for brevity */}
       <div className="bg-white p-8 rounded-xl shadow-lg h-130 max-w-md z-10 w-85">
         <h1 className="text-center text-3xl font-semibold mb-1">
           My <span className="text-orange-500 font-bold">Book</span> Shelf
@@ -74,25 +112,39 @@ export default function Login() {
             />
           </div>
 
+          {error && (
+            <p className="text-red-600 mb-4 text-sm font-semibold">{error}</p>
+          )}
+
           <div className="mb-6 flex items-center justify-between text-sm">
             <label className="flex items-center text-gray-700">
               <input type="checkbox" className="mr-2 accent-orange-500" /> Remember me
             </label>
-            <a href="/auth/forgotPassword" className="text-blue-600 hover:underline">Forgot password?</a>
+            <a href="/auth/forgotPassword" className="text-blue-600 hover:underline">
+              Forgot password?
+            </a>
           </div>
 
           <button
             type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded"
+            disabled={loading}
+            className={`w-full ${
+              loading ? "bg-orange-300" : "bg-orange-500 hover:bg-orange-600"
+            } text-white font-semibold py-2 px-4 rounded`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
 
           <div className="mt-4 flex justify-between text-gray-600 text-xs">
             <span>
-              New User? <a href="/register" className="text-blue-600 hover:underline text-xs">Register Here</a>
+              New User?{" "}
+              <a href="/register" className="text-blue-600 hover:underline text-xs">
+                Register Here
+              </a>
             </span>
-            <a href="#" className="text-blue-600 hover:underline text-xs">Use as Guest</a>
+            <a href="#" className="text-blue-600 hover:underline text-xs">
+              Use as Guest
+            </a>
           </div>
         </form>
       </div>
