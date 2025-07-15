@@ -34,7 +34,6 @@ export default function Register() {
     try {
       const res = await axios.post(
         "https://mybooklibrary-5awp.onrender.com/api/auth/register",
-        
         {
           userName: username.trim(),
           email: email.trim(),
@@ -45,12 +44,13 @@ export default function Register() {
 
       const data = res.data;
 
-      if (!data.success) {
-        throw new Error(data?.message || "Registration failed");
+      // Assuming the backend sends a success flag or similar
+      if (res.status !== 200 && res.status !== 201) {
+         throw new Error(data?.message || "Registration failed");
       }
 
-      alert("Registration successful!");
-      router.push("/auth/OTP");
+      alert("Registration successful! Please check your email for an OTP.");
+      router.push("/auth/OTP"); // Or a page that says to check email
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response?.data?.message) {
         alert(error.response.data.message);
@@ -93,7 +93,7 @@ export default function Register() {
         </svg>
       </div>
 
-      <div className="bg-white p-8 rounded-xl shadow-lg max-w-md z-10 w-85">
+      <div className="bg-white p-8 rounded-xl shadow-lg max-w-md z-10 w-full mx-4 sm:w-85">
         <h1 className="text-center text-3xl font-semibold mb-1">
           My <span className="text-orange-500 font-bold">Book</span> Shelf
         </h1>
@@ -173,7 +173,7 @@ export default function Register() {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full flex justify-center items-center gap-2 bg-orange-500 text-white font-semibold py-2 px-4 rounded transition ${
+            className={`w-full flex justify-center items-center gap-2 bg-orange-500 text-white font-semibold py-2 px-4 rounded-md transition ${
               isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-600"
             }`}
           >
