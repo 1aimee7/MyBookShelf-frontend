@@ -36,10 +36,10 @@ export default function Register() {
       const res = await axios.post(
         "https://mybooklibrary-5awp.onrender.com/api/auth/register",
         {
-          username: username.trim(),
+          userName: username.trim(),
           email: email.trim(),
-          role,
           password: password.trim(),
+          confirmPassword: confirmPassword.trim(),
         }
       );
 
