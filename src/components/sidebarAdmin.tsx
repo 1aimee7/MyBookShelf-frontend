@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   BookOpen,
@@ -22,6 +22,18 @@ const navItems = [
 
 export default function SidebarAdmin() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Clear localStorage or other storage
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("email");
+
+    // Optionally clear other app states if needed
+
+    // Redirect to login
+    router.push("/auth/login");
+  };
 
   return (
     <aside className="w-64 h-screen bg-white border-r shadow-sm fixed left-0 top-0 z-20 hidden md:block">
@@ -57,13 +69,13 @@ export default function SidebarAdmin() {
 
       {/* Logout */}
       <div className="absolute bottom-4 w-full px-4">
-        <Link
-          href="/logout"
-          className="flex items-center px-4 py-2 text-red-600 hover:bg-red-100 rounded-md font-medium text-sm"
+        <button
+          onClick={handleLogout}
+          className="flex items-center w-full px-4 py-2 text-red-600 hover:bg-red-100 rounded-md font-medium text-sm"
         >
           <LogOut className="mr-3 h-5 w-5" />
           Logout
-        </Link>
+        </button>
       </div>
     </aside>
   );

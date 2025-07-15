@@ -3,9 +3,17 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"; // Note the curly braces and camelCase name
+
+interface JwtPayload {
+  sub: string;           // user email or id
+  role: "ADMIN" | "USER"; // role from backend
+  exp: number;
+  iat: number;
+}
 
 export default function Login() {
-  const [email, setEmail] = useState("aimeishimwe25@gmail.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -23,20 +31,28 @@ export default function Login() {
         {
           headers: {
             "Content-Type": "application/json",
-            // Don't add Authorization here for login request, backend will authenticate user by email/password
           },
         }
       );
 
-      // Assuming the response data is the token string itself (from your curl)
+      // The response.data should be the JWT token string
       const token = response.data;
-      console.log("Login successful, token:", token);
+      console.log("Login successful. Token:", token);
 
-      // Save token (e.g. localStorage or cookies)
+      // Decode token to get payload including role
+      const decoded = jwtDecode<JwtPayload>(token); 
+      console.log("Decoded JWT payload:", decoded);
+
+      // Save token & email in localStorage or cookies as you prefer
       localStorage.setItem("authToken", token);
+      localStorage.setItem("email", email);
 
-      // Redirect to dashboard
-      router.push("/dashboard");
+      // Redirect depending on role
+      if (decoded.role === "ADMIN") {
+        router.push("/admin-dashboard");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err: unknown) {
       console.error(err);
 
@@ -70,15 +86,12 @@ export default function Login() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background SVG omitted for brevity */}
       <div className="bg-white p-8 rounded-xl shadow-lg h-130 max-w-md z-10 w-85">
         <h1 className="text-center text-3xl font-semibold mb-1">
           My <span className="text-orange-500 font-bold">Book</span> Shelf
         </h1>
         <p className="text-center text-gray-500 mb-6 text-sm leading-tight">
-          Welcome Back!
-          <br />
-          Sign in to your Digital Library
+          Welcome Back! <br /> Sign in to your Digital Library
         </p>
 
         <form onSubmit={handleSubmit}>
