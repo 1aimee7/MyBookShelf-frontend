@@ -9,6 +9,7 @@ import {
   Eye,
   ChevronDown,
 } from "lucide-react";
+import axios from "axios";
 
 type User = {
   id: string;
@@ -64,6 +65,7 @@ export default function ManageUsers() {
   const [filter, setFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState("");
 
   const usersPerPage = 10;
 
@@ -111,14 +113,50 @@ export default function ManageUsers() {
     );
   };
 
-  const handleAddUser = (newUser: Omit<User, "id">) => {
-    setUsers((prev) => [
-      ...prev,
-      {
-        ...newUser,
+  const handleAddUser = async (newUser: {
+    username: string;
+    email: string;
+    password: string;
+  }) => {
+    try {
+      const requestBody = {
+        email: newUser.email,
+        password: newUser.password,
+        confirmPassword: newUser.password,
+        userName: newUser.username,
+        role: "USER",
+      };
+
+      await axios.post(
+        "https://mybooklibrary-5awp.onrender.com/api/auth/admin/create-user",
+        requestBody,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      const addedUser: User = {
         id: Date.now().toString(),
-      },
-    ]);
+        username: newUser.username,
+        email: newUser.email,
+        regNo: "AUTO",
+        role: "user",
+        status: "Active",
+        joinedDate: new Date().toISOString().split("T")[0],
+        borrowedBooks: 0,
+        readingHistory: [],
+      };
+
+      setUsers((prev) => [...prev, addedUser]);
+      setShowModal(false);
+      setError("");
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Failed to register new user.");
+      } else {
+        setError("An unexpected error occurred.");
+      }
+    }
   };
 
   return (
@@ -260,7 +298,6 @@ export default function ManageUsers() {
         )}
       </div>
 
-      {/* ✅ UPDATED Modal (regNo & role removed) */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
@@ -270,18 +307,12 @@ export default function ManageUsers() {
                 e.preventDefault();
                 const form = e.target as HTMLFormElement;
                 const formData = new FormData(form);
-                const newUser: Omit<User, "id"> = {
+                const newUser = {
                   username: formData.get("username") as string,
                   email: formData.get("email") as string,
-                  regNo: "AUTO", // default/fake regNo
-                  role: "user", // default role
-                  status: "Active",
-                  joinedDate: new Date().toISOString().split("T")[0],
-                  borrowedBooks: 0,
-                  readingHistory: [],
+                  password: formData.get("password") as string,
                 };
                 handleAddUser(newUser);
-                setShowModal(false);
               }}
               className="space-y-3"
             >
@@ -299,10 +330,21 @@ export default function ManageUsers() {
                 required
                 className="w-full p-2 border rounded"
               />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+                className="w-full p-2 border rounded"
+              />
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <div className="flex justify-end space-x-2">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => {
+                    setShowModal(false);
+                    setError("");
+                  }}
                   className="px-4 py-2 text-gray-600 bg-gray-200 rounded"
                 >
                   Cancel
