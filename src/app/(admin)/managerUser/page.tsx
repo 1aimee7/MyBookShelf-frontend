@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Search,
   Trash2,
@@ -9,7 +9,7 @@ import {
   Eye,
   ChevronDown,
 } from "lucide-react";
-import axios from "axios";
+import { useRouter } from "next/navigation";
 
 type User = {
   id: string;
@@ -23,51 +23,32 @@ type User = {
   readingHistory: string[];
 };
 
-const managerUser: User[] = [
-  {
-    id: "1",
-    username: "john_doe",
-    email: "john@example.com",
-    regNo: "STU12345",
-    role: "user",
-    status: "Active",
-    joinedDate: "2025-01-15",
-    borrowedBooks: 2,
-    readingHistory: ["Book A", "Book B"],
-  },
-  {
-    id: "2",
-    username: "jane_smith",
-    email: "jane@example.com",
-    regNo: "STU67890",
-    role: "user",
-    status: "Suspended",
-    joinedDate: "2025-02-10",
-    borrowedBooks: 0,
-    readingHistory: ["Book C"],
-  },
-  {
-    id: "3",
-    username: "admin_01",
-    email: "admin@example.com",
-    regNo: "STF11223",
-    role: "admin",
-    status: "Active",
-    joinedDate: "2024-12-01",
-    borrowedBooks: 1,
-    readingHistory: ["Book D", "Book E"],
-  },
-];
+// Temporary static data (optional, can be empty)
+const managerUser: User[] = [];
 
 export default function ManageUsers() {
+  const router = useRouter();
+
   const [users, setUsers] = useState<User[]>(managerUser);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const [showModal, setShowModal] = useState(false);
-  const [error, setError] = useState("");
 
   const usersPerPage = 10;
+
+  // ✅ Pull new user from localStorage (if redirected from /addUser)
+  useEffect(() => {
+    const storedNewUser = localStorage.getItem("newUser");
+    if (storedNewUser) {
+      const parsedUser: User = JSON.parse(storedNewUser);
+      setUsers((prev) => {
+        const exists = prev.some((u) => u.email === parsedUser.email);
+        if (!exists) return [parsedUser, ...prev];
+        return prev;
+      });
+      localStorage.removeItem("newUser");
+    }
+  }, []);
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -113,58 +94,12 @@ export default function ManageUsers() {
     );
   };
 
-  const handleAddUser = async (newUser: {
-    username: string;
-    email: string;
-    password: string;
-  }) => {
-    try {
-      const requestBody = {
-        email: newUser.email,
-        password: newUser.password,
-        confirmPassword: newUser.password,
-        userName: newUser.username,
-        role: "USER",
-      };
-
-      await axios.post(
-        "https://mybooklibrary-5awp.onrender.com/api/auth/admin/create-user",
-        requestBody,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      const addedUser: User = {
-        id: Date.now().toString(),
-        username: newUser.username,
-        email: newUser.email,
-        regNo: "AUTO",
-        role: "user",
-        status: "Active",
-        joinedDate: new Date().toISOString().split("T")[0],
-        borrowedBooks: 0,
-        readingHistory: [],
-      };
-
-      setUsers((prev) => [...prev, addedUser]);
-      setShowModal(false);
-      setError("");
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Failed to register new user.");
-      } else {
-        setError("An unexpected error occurred.");
-      }
-    }
-  };
-
   return (
     <div className="flex flex-col p-6 h-full text-black">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">Manage Users</h2>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => router.push("/addUser")}
           className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
         >
           + Add User
@@ -172,6 +107,7 @@ export default function ManageUsers() {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow flex flex-col flex-1">
+        {/* Search and Filter */}
         <div className="flex flex-col md:flex-row justify-between mb-6 space-y-4 md:space-y-0 md:space-x-4">
           <div className="relative w-full md:w-1/3">
             <Search
@@ -204,6 +140,7 @@ export default function ManageUsers() {
           </div>
         </div>
 
+        {/* Users Table */}
         <div className="overflow-x-auto flex-1 min-h-0">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -297,66 +234,6 @@ export default function ManageUsers() {
           </div>
         )}
       </div>
-
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-            <h2 className="text-lg font-semibold mb-4">Add New User</h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.target as HTMLFormElement;
-                const formData = new FormData(form);
-                const newUser = {
-                  username: formData.get("username") as string,
-                  email: formData.get("email") as string,
-                  password: formData.get("password") as string,
-                };
-                handleAddUser(newUser);
-              }}
-              className="space-y-3"
-            >
-              <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                required
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                required
-                className="w-full p-2 border rounded"
-              />
-              <input
-                type="password"
-                name="password"
-                placeholder="Password"
-                required
-                className="w-full p-2 border rounded"
-              />
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowModal(false);
-                    setError("");
-                  }}
-                  className="px-4 py-2 text-gray-600 bg-gray-200 rounded"
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="px-4 py-2 bg-orange-500 text-white rounded">
-                  Add User
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
