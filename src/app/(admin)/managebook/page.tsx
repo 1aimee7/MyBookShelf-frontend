@@ -145,8 +145,8 @@ const ManageBooks = () => {
       setIsModalOpen(false);
 
     } catch (error) {
-      console.error("Save failed", error);
-      alert("Upload or save failed. Check the console for details.");
+      console.error("Save failed:", error);
+      alert("Upload or save failed. Please check the console for details.");
     }
   };
 
