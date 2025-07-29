@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import axios from "axios";
 import { useRouter } from "next/navigation";
+import { User } from "../managerUser/page";
 
 export default function AddUserPage() {
   const [email, setEmail] = useState("");
@@ -14,17 +14,9 @@ export default function AddUserPage() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleAddUser = async (e: FormEvent<HTMLFormElement>) => {
+  const handleAddUser = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
-
-    const storedToken =
-      localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
-
-    if (!storedToken) {
-      setError("Authentication error. Please log in again.");
-      return;
-    }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
@@ -33,40 +25,41 @@ export default function AddUserPage() {
 
     setLoading(true);
 
-    const formData = {
-      email,
-      password,
-      confirmPassword,
-      userName: username,
-      role,
-    };
+    // Simulate a short delay like a real API call
+    setTimeout(() => {
+      try {
+        // Create a new user object without the `regNo` property
+        const newUser: User = {
+          id: crypto.randomUUID(), // Generate a unique ID
+          username: username,
+          email: email,
+          // regNo has been removed
+          role: role,
+          status: "Active",
+          joinedDate: new Date().toLocaleDateString(), // Use today's date
+          borrowedBooks: 0,
+          readingHistory: [],
+        };
 
-    try {
-      const response = await axios.post(
-        "https://mybooklibrary-5awp.onrender.com/api/auth/admin/create-user",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${storedToken}`,
-          },
-        }
-      );
+        // Save the new user to localStorage so the manage page can pick it up.
+        localStorage.setItem("newUser", JSON.stringify(newUser));
 
-      console.log("User created:", response.data);
-      alert("User created successfully!");
-      router.push("/admin-dashboard/manage-users");
-    } catch (err: unknown) {
-      const errorMsg =
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : "Failed to create user.";
-      setError(errorMsg);
-    } finally {
-      setLoading(false);
-    }
+        console.log("User created locally:", newUser);
+        alert("User created successfully!");
+        
+        // Redirect to the manage users page
+        // Ensure this path is correct for your project structure
+        router.push("/admin-dashboard/manage-users");
+
+      } catch (err: unknown) {
+        setError("Failed to create user locally.");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }, 500); // 0.5 second delay
   };
 
-  // Input change handlers with correct types
   const handleInputChange =
     (setter: (val: string) => void) =>
     (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>

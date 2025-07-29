@@ -1,55 +1,83 @@
 "use client";
 
-import { useState, useEffect, useContext, useRef } from "react";
-import Image from "next/image";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Search, ChevronDown, Clock, Calendar } from "lucide-react";
-import { SearchContext } from "@/context/SearchContext";
+
+// Dummy SearchContext for standalone usage
+const SearchContext = React.createContext({
+  searchTerm: "",
+  // --- FIX IS HERE ---
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  setSearchTerm: (_term: string) => {},
+});
 
 const Header = () => {
   const [isFilterOpen, setFilterOpen] = useState(false);
   const [isProfileOpen, setProfileOpen] = useState(false);
-  const [isLangOpen, setLangOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const { searchTerm, setSearchTerm } = useContext(SearchContext);
   const [currentTime, setCurrentTime] = useState("");
   const [currentDate, setCurrentDate] = useState("");
-  const [selectedLang, setSelectedLang] = useState("English");
+
+  const [name, setName] = useState("Guest");
 
   const filterRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const langRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const storedData = localStorage.getItem("currentUser");
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(storedData);
+        if (parsedData?.user?.name) {
+          setName(parsedData.user.name);
+        } else {
+          setName("Guest");
+        }
+      } catch (error) {
+        console.error("Failed to parse user from localStorage", error);
+        setName("Guest");
+      }
+    }
+
     const updateTimeDate = () => {
       const now = new Date();
       setCurrentTime(now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }));
       setCurrentDate(now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).replace(/ /g, "-"));
     };
-    updateTimeDate(); // Initial value: 04:59 PM and 07-Jul-2025
-    const interval = setInterval(updateTimeDate, 60000); // Update every minute
-    return () => clearInterval(interval);
-  }, []);
+    updateTimeDate();
+    const interval = setInterval(updateTimeDate, 60000);
 
-  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(e.target as Node)) setFilterOpen(false);
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
-      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const filterOptions = ["All", "Title", "Author", "Text", "Subjects"];
-  const langOptions = ["Lang", "English", "French", "Swahili"];
+
+  const getInitial = (currentName: string) => {
+    return currentName ? currentName.charAt(0).toUpperCase() : "G";
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("currentUser");
+    window.location.href = "/auth/login";
+  };
 
   return (
     <header className="flex-shrink-0 flex justify-between items-center p-4 sm:p-6 border-b border-gray-200 bg-white text-black shadow-sm">
-      {/* Search Bar Section */}
       <div ref={filterRef} className="relative flex items-center bg-gray-50 border border-gray-300 rounded-lg p-2 w-full max-w-sm lg:max-w-md shadow-sm focus-within:ring-2 focus-within:ring-orange-400">
         <button
           onClick={() => setFilterOpen(!isFilterOpen)}
           className="flex items-center text-sm pr-2 border-r border-gray-300 text-gray-600 hover:text-black transition-colors"
+          type="button"
         >
           {selectedCategory} <ChevronDown size={16} className="ml-1" />
         </button>
@@ -59,7 +87,7 @@ const Header = () => {
           className="w-full ml-2 focus:outline-none bg-transparent text-gray-800 placeholder-gray-400"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          suppressHydrationWarning // Handle browser extension attributes
+          suppressHydrationWarning
         />
         <Search className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors" />
         {isFilterOpen && (
@@ -72,6 +100,7 @@ const Header = () => {
                   setSelectedCategory(opt);
                   setFilterOpen(false);
                 }}
+                type="button"
               >
                 {opt}
               </button>
@@ -79,57 +108,29 @@ const Header = () => {
           </div>
         )}
       </div>
-
-      {/* Right Controls */}
       <div className="flex items-center space-x-2 sm:space-x-4">
-        <div className="flex items-center space-x-4">
-          <div ref={langRef} className="relative">
-            <button
-              onClick={() => setLangOpen(!isLangOpen)}
-              className="flex items-center text-sm bg-gray-50 border border-gray-300 rounded-lg p-2 shadow-sm hover:bg-gray-100 transition-colors"
-            >
-              {selectedLang} <ChevronDown size={16} className="ml-1" />
-            </button>
-            {isLangOpen && (
-              <div className="absolute top-full right-0 mt-2 w-28 bg-white border border-gray-300 rounded-lg shadow-xl z-20">
-                {langOptions.map((lang) => (
-                  <button
-                    key={lang}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                    onClick={() => {
-                      setSelectedLang(lang);
-                      setLangOpen(false);
-                    }}
-                  >
-                    {lang}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+        <div className="hidden md:flex items-center space-x-4">
           <div className="flex items-center text-sm bg-gray-50 border border-gray-300 rounded-lg p-2 shadow-sm min-w-[100px]">
-            <Clock size={16} className="mr-2 text-gray-500" /> {currentTime || "04:59 PM"}
+            <Clock size={16} className="mr-2 text-gray-500" /> {currentTime}
           </div>
-          <div className="flex items-center text-sm bg-gray-50 border border-gray-300 rounded-lg p-2 shadow-sm min-w-[120px]">
-            <Calendar size={16} className="mr-2 text-gray-500" /> {currentDate || "07-Jul-2025"}
+          <div className="hidden lg:flex items-center text-sm bg-gray-50 border border-gray-300 rounded-lg p-2 shadow-sm min-w-[120px]">
+            <Calendar size={16} className="mr-2 text-gray-500" /> {currentDate}
           </div>
         </div>
-
-        {/* Profile Dropdown */}
         <div ref={profileRef} className="relative">
           <button
             onClick={() => setProfileOpen(!isProfileOpen)}
             className="flex items-center bg-gray-50 border border-gray-300 rounded-lg p-2 cursor-pointer shadow-sm hover:bg-gray-100 transition-colors"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded={isProfileOpen}
           >
-            <Image
-              src="/authors/steve-krug.jpg"
-              alt="Kenson"
-              width={24}
-              height={24}
-              className="rounded-full"
-              suppressHydrationWarning // Handle browser extension attributes
-            />
-            <span className="hidden sm:inline ml-2 text-sm font-semibold text-gray-800">Kenson</span>
+            <div className="w-6 h-6 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-sm">
+              {getInitial(name)}
+            </div>
+            <span className="hidden sm:inline ml-2 text-sm font-semibold text-gray-800">
+              {name}
+            </span>
             <ChevronDown size={16} className="ml-1" />
           </button>
           {isProfileOpen && (
@@ -138,7 +139,13 @@ const Header = () => {
               <a href="/favorite" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Favourite</a>
               <a href="/payment" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">Payments</a>
               <hr className="my-1 border-gray-200" />
-              <a href="/auth/login" className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors">Logout</a>
+              <button
+                onClick={handleLogout}
+                className="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors"
+                type="button"
+              >
+                Logout
+              </button>
             </div>
           )}
         </div>
